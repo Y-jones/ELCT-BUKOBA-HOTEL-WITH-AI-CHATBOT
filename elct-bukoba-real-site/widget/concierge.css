@@ -1,0 +1,185 @@
+/* ELCT Bukoba Hotel & Tours — AI Assistant widget styles
+   Palette sampled directly from the hotel's own reception building photo and
+   logo (coral-red roof/signage, warm terracotta, garden green, cream) rather
+   than an invented color scheme — this is the hotel's real visual identity.
+   Fully self-contained: no CSS variables, no external font import, and every
+   selector is scoped to #concierge-launcher / #concierge-panel / .cw-* so it
+   cannot leak into or collide with the site's existing theme CSS. */
+
+#concierge-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #C5433C;
+  color: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(43, 36, 32, 0.35);
+  z-index: 999999;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.18s ease, box-shadow 0.18s ease;
+  padding: 0;
+}
+#concierge-launcher:hover { background: #9E332E; transform: translateY(-2px) scale(1.04); box-shadow: 0 10px 26px rgba(43, 36, 32, 0.4); }
+#concierge-launcher:active { transform: translateY(0) scale(0.96); }
+#concierge-launcher svg { width: 26px; height: 26px; }
+#concierge-launcher .cw-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #D9A441;
+  border: 2px solid #FBF3E7;
+}
+#concierge-launcher.cw-pulse {
+  animation: cw-launcher-pulse 1.8s ease-out 3;
+}
+@keyframes cw-launcher-pulse {
+  0% { box-shadow: 0 6px 18px rgba(43, 36, 32, 0.35), 0 0 0 0 rgba(197, 67, 60, 0.5); }
+  70% { box-shadow: 0 6px 18px rgba(43, 36, 32, 0.35), 0 0 0 14px rgba(197, 67, 60, 0); }
+  100% { box-shadow: 0 6px 18px rgba(43, 36, 32, 0.35), 0 0 0 0 rgba(197, 67, 60, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #concierge-launcher.cw-pulse { animation: none; }
+}
+
+#concierge-panel {
+  position: fixed;
+  right: 24px;
+  bottom: 96px;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  height: 560px;
+  max-height: calc(100vh - 140px);
+  background: #FFFFFF;
+  border: 1px solid #E9DCC8;
+  box-shadow: 0 18px 48px rgba(43, 36, 32, 0.28);
+  display: flex;
+  flex-direction: column;
+  z-index: 999999;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(16px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: bottom right;
+}
+#concierge-panel * { box-sizing: border-box; }
+#concierge-panel.cw-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  #concierge-panel { transition: opacity 0.1s linear; transform: none !important; }
+}
+
+.cw-header {
+  background: #C5433C;
+  color: #FFFFFF;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.cw-header .cw-who { display: flex; align-items: center; gap: 10px; }
+.cw-header .cw-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: #D9A441;
+  color: #3A2A1A;
+  display: flex; align-items: center; justify-content: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.cw-header .cw-name { font-size: 13px; font-weight: 700; line-height: 1.3; letter-spacing: 0.02em; text-transform: uppercase; }
+.cw-header .cw-status { font-size: 11px; color: #FBE3C8; display: flex; align-items: center; gap: 5px; }
+.cw-header .cw-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #7ED9A0; display: inline-block; }
+.cw-close { background: none; border: none; color: #FFFFFF; cursor: pointer; padding: 4px; line-height: 0; }
+.cw-close svg { width: 18px; height: 18px; }
+
+.cw-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+  background: #FBF3E7;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cw-msg { max-width: 86%; font-size: 14px; line-height: 1.5; animation: cw-msg-in 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes cw-msg-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cw-msg { animation: none; }
+}
+.cw-msg .cw-bubble { padding: 10px 13px; border-radius: 10px; }
+.cw-msg.bot { align-self: flex-start; }
+.cw-msg.bot .cw-bubble { background: #FFFFFF; border: 1px solid #E9DCC8; border-top-left-radius: 3px; }
+.cw-msg.user { align-self: flex-end; }
+.cw-msg.user .cw-bubble { background: #2E5E38; color: #FFFFFF; border-top-right-radius: 3px; }
+.cw-msg .cw-bubble p { margin: 0 0 6px; max-width: none; }
+.cw-msg .cw-bubble p:last-child { margin-bottom: 0; }
+.cw-msg .cw-bubble ul { margin: 6px 0; padding-left: 18px; }
+.cw-msg .cw-bubble li { margin-bottom: 3px; }
+
+.cw-typing { display: flex; gap: 4px; padding: 10px 13px; }
+.cw-typing span {
+  width: 6px; height: 6px; border-radius: 50%; background: #8A7B6A;
+  animation: cw-bounce 1.2s infinite ease-in-out;
+  display: inline-block;
+}
+.cw-typing span:nth-child(2) { animation-delay: 0.15s; }
+.cw-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes cw-bounce { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+
+.cw-inputrow {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #FFFFFF;
+  border-top: 1px solid #E9DCC8;
+  flex-shrink: 0;
+}
+.cw-inputrow input {
+  flex: 1;
+  border: 1px solid #E9DCC8;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  min-width: 0;
+}
+.cw-inputrow input:focus { border-color: #C5433C; outline: none; }
+.cw-send {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #2E5E38;
+  color: #FFFFFF;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+.cw-send:hover { background: #234529; }
+.cw-send:active { transform: scale(0.9); }
+.cw-send svg { width: 17px; height: 17px; }
+
+@media (max-width: 460px) {
+  #concierge-panel { right: 16px; bottom: 88px; width: calc(100vw - 32px); height: calc(100vh - 120px); }
+  #concierge-launcher { right: 16px; bottom: 16px; }
+}

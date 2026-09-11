@@ -1,0 +1,117 @@
+/* ELCT Bukoba Hotel & Tours — premium visual layer
+   Loaded AFTER the theme's own stylesheets so these rules win the cascade
+   without needing !important everywhere. Targets the real CozyStay/Elementor
+   classes already in your pages (.cs-title, .button.elementor-button-link,
+   .cs-btn-outline, #masthead, etc.) — no HTML structure changed, nothing
+   removed, your theme's own scroll-reveal animation system (cs-animation-*)
+   is left alone rather than duplicated.
+
+   Brand colors sampled directly from your reception building photo and
+   logo, not invented:
+     coral-red  #C5433C  (roof / signage / arches)
+     terracotta #DB8A5F  (roof tone, secondary warm accent)
+     gold       #D9A441  (logo ring)
+     garden     #2E5E38  (foliage)
+     cream      #FBF3E7  (light backgrounds)
+   Your existing fonts (Cardo for headings, Inter for body) are kept as-is —
+   they're a good pairing already; this only refines weight, spacing and
+   color, not typeface.
+*/
+
+:root {
+  --elct-coral: #C5433C;
+  --elct-coral-dark: #9E332E;
+  --elct-terracotta: #DB8A5F;
+  --elct-gold: #D9A441;
+  --elct-garden: #2E5E38;
+  --elct-cream: #FBF3E7;
+}
+
+/* ---------- Typography refinement (keeps Cardo/Inter, improves rhythm) --- */
+body, p, li {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.cs-title {
+  letter-spacing: 0.01em;
+}
+.cs-title.color-white {
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+}
+
+::selection {
+  background: var(--elct-gold);
+  color: #2B2117;
+}
+
+:focus-visible {
+  outline: 2px solid var(--elct-gold);
+  outline-offset: 2px;
+}
+
+/* ---------- Buttons — real brand palette + smooth micro-interaction ----- */
+.button.elementor-button-link,
+a.button {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+.button.elementor-button-link:hover,
+a.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(43, 33, 23, 0.18);
+}
+
+.cs-btn-color-black.cs-btn-outline {
+  border-color: var(--elct-coral) !important;
+  color: var(--elct-coral) !important;
+}
+.cs-btn-color-black.cs-btn-outline:hover {
+  background-color: var(--elct-coral) !important;
+  border-color: var(--elct-coral) !important;
+  color: #FFFFFF !important;
+}
+
+.cs-btn-color-white.cs-btn-outline {
+  border-color: var(--elct-gold) !important;
+  color: #FFFFFF !important;
+}
+.cs-btn-color-white.cs-btn-outline:hover {
+  background-color: var(--elct-gold) !important;
+  border-color: var(--elct-gold) !important;
+  color: #2B2117 !important;
+}
+
+/* ---------- Header — subtle depth once scrolled (see premium.js) -------- */
+#masthead.site-header {
+  transition: box-shadow 0.25s ease, background-color 0.25s ease;
+}
+#masthead.site-header.elct-scrolled {
+  box-shadow: 0 4px 24px rgba(43, 33, 23, 0.12);
+}
+
+/* ---------- Links inside body copy — quiet underline animation ---------- */
+.elementor-widget-text-editor a:not(.button),
+.entry-content a:not(.button) {
+  background-image: linear-gradient(var(--elct-coral), var(--elct-coral));
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1.5px;
+  transition: background-size 0.25s ease, color 0.25s ease;
+  padding-bottom: 1px;
+}
+.elementor-widget-text-editor a:not(.button):hover,
+.entry-content a:not(.button):hover {
+  background-size: 100% 1.5px;
+  color: var(--elct-coral-dark);
+}
+
+/* ---------- Scrollbar — quiet, brand-toned (progressive enhancement) ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--elct-cream); }
+::-webkit-scrollbar-thumb { background: var(--elct-terracotta); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--elct-coral); }
+
+/* ---------- Star ratings / icons — tie into gold accent ----------------- */
+.elementor-star-rating i,
+.elementor-icon {
+  color: var(--elct-gold);
+}
