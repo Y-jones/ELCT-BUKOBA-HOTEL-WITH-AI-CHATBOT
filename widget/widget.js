@@ -13,7 +13,7 @@
 
   // Point this at your deployed backend, e.g. 'https://api.elctbukobahotelandtours.com'
   // Leave as '' to always use the local demo matcher (no backend yet).
-  var BACKEND_URL = '';
+  var BACKEND_URL = 'https://elct-bukoba-hotel.netlify.app/';
   var BACKEND_TIMEOUT_MS = 8000;
 
   var state = {
