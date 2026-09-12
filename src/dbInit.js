@@ -34,12 +34,26 @@ async function initializeDatabase() {
          RETURNING id`,
         [mainPropertyId, room.name, room.capacity_guests, room.beds, room.price_foreigner_usd, room.price_resident_tzs]
       );
-      await client.query(
-        `INSERT INTO room_inventory (room_type_id, total_units)
-         VALUES ($1, 0)
-         ON CONFLICT (room_type_id) DO NOTHING`,
-        [result.rows[0].id]
-      );
+      const inventorySeed = process.env.ROOM_INVENTORY_JSON ? JSON.parse(process.env.ROOM_INVENTORY_JSON) : null;
+      const seededUnits = inventorySeed && Number.isFinite(Number(inventorySeed[room.name]))
+        ? Math.max(0, Math.floor(Number(inventorySeed[room.name])))
+        : null;
+
+      if (seededUnits !== null) {
+        await client.query(
+          `INSERT INTO room_inventory (room_type_id, total_units)
+           VALUES ($1, $2)
+           ON CONFLICT (room_type_id) DO UPDATE SET total_units=EXCLUDED.total_units, updated_at=NOW()`,
+          [result.rows[0].id, seededUnits]
+        );
+      } else {
+        await client.query(
+          `INSERT INTO room_inventory (room_type_id, total_units)
+           VALUES ($1, 0)
+           ON CONFLICT (room_type_id) DO NOTHING`,
+          [result.rows[0].id]
+        );
+      }
     }
   });
 
