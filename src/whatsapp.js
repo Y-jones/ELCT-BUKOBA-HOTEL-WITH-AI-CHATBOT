@@ -25,21 +25,37 @@ function buildHumanHandoffLink(whatsappNumber, lang) {
   return buildWhatsAppLink(whatsappNumber, text);
 }
 
+function formatBookingDate(value) {
+  if (!value) return 'To be confirmed';
+  const raw = String(value);
+  const datePart = raw.slice(0, 10);
+  const date = new Date(`${datePart}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return raw;
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC'
+  }).format(date);
+}
+
 function bookingTicketText(booking) {
   const amount = booking.total_amount != null
     ? `${booking.currency} ${Number(booking.total_amount).toLocaleString('en-US')}`
     : 'To be confirmed';
   return [
-    '🎫 *ELCT BUKOBA HOTEL & TOURS*',
-    '*BOOKING CONFIRMED* ✅',
+    '🎫 ELCT BUKOBA HOTEL & TOURS',
+    'BOOKING CONFIRMED ✅',
     '',
-    `*Booking:* ${booking.booking_reference}`,
-    `*Guest:* ${booking.guest_name || booking.guest?.name}`,
-    `*Room:* ${booking.room_type}`,
-    `*Check-in:* ${booking.check_in}`,
-    `*Check-out:* ${booking.check_out}`,
-    `*Guests:* ${booking.guests_count}`,
-    `*Total:* ${amount}`,
+    `Booking: ${booking.booking_reference}`,
+    `Guest: ${booking.guest_name || booking.guest?.name}`,
+    `Room: ${booking.room_type}`,
+    '',
+    `Check-in: ${formatBookingDate(booking.check_in)}`,
+    `Check-out: ${formatBookingDate(booking.check_out)}`,
+    `Guests: ${booking.guests_count}`,
+    `Total: ${amount}`,
     '',
     'Please keep this booking reference and present it when you arrive.',
     'Karibu sana — we look forward to welcoming you! 🌿',
