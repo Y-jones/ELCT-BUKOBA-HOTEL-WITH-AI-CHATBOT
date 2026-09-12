@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<!-- saved from url=(0038)https://bukobahotel.elctnwd.or.tz/book -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="yqHaRILIFlnslx3rB5My9ZFkOGBUf8e5NyOKSko5">
+    <title>Book a Room | ELCT Bukoba Hotel &amp; Tours — ELCT Bukoba Hotel &amp; Tours</title>
+    <meta name="description" content="Reserve a room at ELCT Bukoba Hotel &amp; Tours online. Choose your dates, room type, and enjoy a comfortable stay in Bukoba, Tanzania.">
+    
+    
+    <link rel="icon" type="image/png" href="./Book a Room_files/elctbukobahotellogo.png">
+    <link rel="shortcut icon" type="image/png" href="./Book a Room_files/elctbukobahotellogo.png">
+    <link rel="apple-touch-icon" href="./Book a Room_files/elctbukobahotellogo.png">
+
+    <link href="./Book a Room_files/bootstrap.min.css" rel="stylesheet">
+    <link href="./Book a Room_files/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="./Book a Room_files/css2" rel="stylesheet">
+    <link href="./Book a Room_files/public-booking.css" rel="stylesheet">
+
+    
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f6f9;
+            color: #1a1a2e;
+        }
+
+        /* ── Header ── */
+        .site-header {
+            background: #1c3a2d;
+            color: #fff;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+        }
+        .site-header .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+        }
+        .site-header .brand-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: .3px;
+        }
+        .site-header .brand-sub {
+            font-size: .75rem;
+            color: rgba(255,255,255,.6);
+            margin-top: 1px;
+        }
+        .site-header .header-logo {
+            width: 44px;
+            height: 44px;
+            background: #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+            overflow: hidden;
+            padding: 4px;
+        }
+        .site-header .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* ── Page hero ── */
+        .booking-hero {
+            background: linear-gradient(135deg, #1c3a2d 0%, #2d5a3d 100%);
+            color: #fff;
+            padding: 48px 0 40px;
+        }
+        .booking-hero h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .booking-hero p {
+            color: rgba(255,255,255,.75);
+            font-size: .95rem;
+            margin: 0;
+        }
+
+        /* ── Booking card ── */
+        .booking-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            border: 1px solid #e8ecf0;
+            margin-top: -28px;
+        }
+        .booking-card .card-header-section {
+            padding: 24px 28px 0;
+            border-bottom: 1px solid #f0f2f5;
+            margin-bottom: 24px;
+        }
+        .booking-card .card-header-section h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1c3a2d;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .booking-card .card-header-section h5 i {
+            background: #e8f5e9;
+            color: #2d5a3d;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+        }
+        .booking-card-body {
+            padding: 24px 28px 28px;
+        }
+
+        /* ── Section labels ── */
+        .section-divider {
+            font-size: .7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c757d;
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        /* ── Form controls ── */
+        .form-label {
+            font-size: .82rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        .form-control, .form-select {
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: .9rem;
+            padding: 9px 12px;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #2d5a3d;
+            box-shadow: 0 0 0 3px rgba(45,90,61,.12);
+        }
+        .form-control.is-invalid, .form-select.is-invalid {
+            border-color: #dc3545;
+        }
+
+        /* ── Residency toggle ── */
+        .residency-toggle .btn-check + .btn {
+            border: 2px solid #d1d5db;
+            color: #374151;
+            font-weight: 500;
+            font-size: .88rem;
+            border-radius: 8px;
+            padding: 10px 24px;
+            background: #fff;
+            transition: all .15s;
+        }
+        .residency-toggle .btn-check:checked + .btn-resident {
+            background: #e8f5e9;
+            border-color: #2d5a3d;
+            color: #1c3a2d;
+        }
+        .residency-toggle .btn-check:checked + .btn-foreigner {
+            background: #fff3e0;
+            border-color: #e65100;
+            color: #bf360c;
+        }
+
+        /* ── Pickup card ── */
+        .pickup-card {
+            background: #f8fffe;
+            border: 1px solid #c8e6c9;
+            border-radius: 9px;
+            padding: 16px 18px;
+        }
+
+        /* ── Pricing summary ── */
+        .pricing-summary {
+            background: #f8f9fa;
+            border-radius: 9px;
+            padding: 18px 20px;
+            border: 1px solid #e9ecef;
+        }
+        .pricing-summary .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .875rem;
+            padding: 4px 0;
+            color: #495057;
+        }
+        .pricing-summary .price-row.total-row {
+            border-top: 2px solid #dee2e6;
+            margin-top: 8px;
+            padding-top: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1c3a2d;
+        }
+        .price-value {
+            font-weight: 600;
+            font-family: 'Inter', monospace;
+        }
+
+        /* ── Submit button ── */
+        .btn-book {
+            background: #1c3a2d;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: .95rem;
+            padding: 13px 32px;
+            width: 100%;
+            transition: background .15s;
+        }
+        .btn-book:hover {
+            background: #2d5a3d;
+            color: #fff;
+        }
+        .btn-book:disabled {
+            background: #9cac9c;
+        }
+
+        /* ── Availability badge ── */
+        .availability-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: .78rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* ── Footer ── */
+        .site-footer {
+            background: #1c3a2d;
+            color: rgba(255,255,255,.5);
+            text-align: center;
+            padding: 20px 0;
+            font-size: .8rem;
+            margin-top: 60px;
+        }
+    </style>
+<link rel="stylesheet" href="widget/concierge.css">
+<link rel="stylesheet" href="premium/premium.css">
+</head>
+<body>
+
+    
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                <div class="d-flex align-items-center">
+                    <div class="header-logo">
+                        <img src="./Book a Room_files/elctbukobahotellogo.png" alt="ELCT Bukoba Hotel">
+                    </div>
+                    <div>
+                        <div class="brand-name">ELCT Bukoba Hotel &amp; Tours</div>
+                        <div class="brand-sub">Home Of Tranquility</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="header-contact-strip d-none d-md-flex">
+                        <a href="tel:+255754415404"><i class="bi bi-telephone-fill"></i> +255 754 415 404</a>
+                        <a href="mailto:info@elctbukobahotelandtours.com"><i class="bi bi-envelope-fill"></i> info@elctbukobahotelandtours.com</a>
+                    </div>
+                    <a href="index.html" target="_blank" rel="noopener" class="btn btn-outline-light btn-sm d-none d-md-inline-flex align-items-center gap-1">
+                        <i class="bi bi-globe2"></i> Our Website
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+
+<section class="booking-hero">
+    <div class="container">
+        <div class="room-type-badge"><i class="bi bi-building"></i> Hotel Accommodation</div>
+        <h1 style="font-size:1.7rem;font-weight:700;margin-bottom:4px;"><i class="bi bi-calendar-check me-2"></i>Book Your Stay</h1>
+        <p style="color:rgba(255,255,255,.7);font-size:.9rem;margin:0;">Reserve your room online at ELCT Bukoba Hotel &amp; Tours — fast, simple, and secure.</p>
+        <div class="booking-steps">
+            <div class="booking-step active">
+                <div class="booking-step-num">1</div>
+                <div class="booking-step-label">Fill Details</div>
+            </div>
+            <div class="booking-step-connector"></div>
+            <div class="booking-step">
+                <div class="booking-step-num">2</div>
+                <div class="booking-step-label">Submit Request</div>
+            </div>
+            <div class="booking-step-connector"></div>
+            <div class="booking-step">
+                <div class="booking-step-num">3</div>
+                <div class="booking-step-label">Confirmation</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container" style="max-width:820px; padding-bottom:60px;">
+
+    
+    
+    <div class="booking-card mt-4">
+        <form method="POST" action="https://bukobahotel.elctnwd.or.tz/book" id="bookingForm" novalidate="">
+            <input type="hidden" name="_token" value="yqHaRILIFlnslx3rB5My9ZFkOGBUf8e5NyOKSko5" autocomplete="off">
+            
+            <div class="booking-card-body">
+                <div class="section-divider"><i class="bi bi-person-fill"></i> Your Details</div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="full_name">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" id="full_name" name="full_name" class="form-control " value="" placeholder="e.g. Amina Mwakasege" required="">
+                                            </div>
+                    <div class="col-md-6">
+                        <label class="form-label">
+    Phone Number <span class="text-danger">*</span></label>
+
+<div class="input-group ">
+    <select name="country_code" id="pub_book_code" class="form-select " style="max-width:155px; flex-shrink:0;" required="">
+                <option value="+255" data-country="Tanzania" selected="">
+            +255 Tanzania
+        </option>
+                <option value="+254" data-country="Kenya">
+            +254 Kenya
+        </option>
+                <option value="+256" data-country="Uganda">
+            +256 Uganda
+        </option>
+                <option value="+250" data-country="Rwanda">
+            +250 Rwanda
+        </option>
+                <option value="+257" data-country="Burundi">
+            +257 Burundi
+        </option>
+                <option value="+243" data-country="DR Congo">
+            +243 DR Congo
+        </option>
+                <option value="+251" data-country="Ethiopia">
+            +251 Ethiopia
+        </option>
+                <option value="+252" data-country="Somalia">
+            +252 Somalia
+        </option>
+                <option value="+291" data-country="Eritrea">
+            +291 Eritrea
+        </option>
+                <option value="+253" data-country="Djibouti">
+            +253 Djibouti
+        </option>
+                <option value="+249" data-country="Sudan">
+            +249 Sudan
+        </option>
+                <option value="+211" data-country="South Sudan">
+            +211 South Sudan
+        </option>
+                <option value="+258" data-country="Mozambique">
+            +258 Mozambique
+        </option>
+                <option value="+265" data-country="Malawi">
+            +265 Malawi
+        </option>
+                <option value="+260" data-country="Zambia">
+            +260 Zambia
+        </option>
+                <option value="+263" data-country="Zimbabwe">
+            +263 Zimbabwe
+        </option>
+                <option value="+27" data-country="South Africa">
+            +27 South Africa
+        </option>
+                <option value="+267" data-country="Botswana">
+            +267 Botswana
+        </option>
+                <option value="+264" data-country="Namibia">
+            +264 Namibia
+        </option>
+                <option value="+266" data-country="Lesotho">
+            +266 Lesotho
+        </option>
+                <option value="+268" data-country="Eswatini">
+            +268 Eswatini
+        </option>
+                <option value="+244" data-country="Angola">
+            +244 Angola
+        </option>
+                <option value="+261" data-country="Madagascar">
+            +261 Madagascar
+        </option>
+                <option value="+230" data-country="Mauritius">
+            +230 Mauritius
+        </option>
+                <option value="+248" data-country="Seychelles">
+            +248 Seychelles
+        </option>
+                <option value="+269" data-country="Comoros">
+            +269 Comoros
+        </option>
+                <option value="+234" data-country="Nigeria">
+            +234 Nigeria
+        </option>
+                <option value="+233" data-country="Ghana">
+            +233 Ghana
+        </option>
+                <option value="+237" data-country="Cameroon">
+            +237 Cameroon
+        </option>
+                <option value="+221" data-country="Senegal">
+            +221 Senegal
+        </option>
+                <option value="+225" data-country="Ivory Coast">
+            +225 Ivory Coast
+        </option>
+                <option value="+241" data-country="Gabon">
+            +241 Gabon
+        </option>
+                <option value="+242" data-country="Republic of Congo">
+            +242 Republic of Congo
+        </option>
+                <option value="+236" data-country="Central African Rep.">
+            +236 Central African Rep.
+        </option>
+                <option value="+235" data-country="Chad">
+            +235 Chad
+        </option>
+                <option value="+227" data-country="Niger">
+            +227 Niger
+        </option>
+                <option value="+223" data-country="Mali">
+            +223 Mali
+        </option>
+                <option value="+226" data-country="Burkina Faso">
+            +226 Burkina Faso
+        </option>
+                <option value="+224" data-country="Guinea">
+            +224 Guinea
+        </option>
+                <option value="+232" data-country="Sierra Leone">
+            +232 Sierra Leone
+        </option>
+                <option value="+231" data-country="Liberia">
+            +231 Liberia
+        </option>
+                <option value="+220" data-country="Gambia">
+            +220 Gambia
+        </option>
+                <option value="+229" data-country="Benin">
+            +229 Benin
+        </option>
+                <option value="+228" data-country="Togo">
+            +228 Togo
+        </option>
+                <option value="+20" data-country="Egypt">
+            +20 Egypt
+        </option>
+                <option value="+212" data-country="Morocco">
+            +212 Morocco
+        </option>
+                <option value="+213" data-country="Algeria">
+            +213 Algeria
+        </option>
+                <option value="+216" data-country="Tunisia">
+            +216 Tunisia
+        </option>
+                <option value="+218" data-country="Libya">
+            +218 Libya
+        </option>
+                <option value="+44" data-country="United Kingdom">
+            +44 United Kingdom
+        </option>
+                <option value="+49" data-country="Germany">
+            +49 Germany
+        </option>
+                <option value="+33" data-country="France">
+            +33 France
+        </option>
+                <option value="+39" data-country="Italy">
+            +39 Italy
+        </option>
+                <option value="+34" data-country="Spain">
+            +34 Spain
+        </option>
+                <option value="+31" data-country="Netherlands">
+            +31 Netherlands
+        </option>
+                <option value="+32" data-country="Belgium">
+            +32 Belgium
+        </option>
+                <option value="+41" data-country="Switzerland">
+            +41 Switzerland
+        </option>
+                <option value="+46" data-country="Sweden">
+            +46 Sweden
+        </option>
+                <option value="+47" data-country="Norway">
+            +47 Norway
+        </option>
+                <option value="+45" data-country="Denmark">
+            +45 Denmark
+        </option>
+                <option value="+358" data-country="Finland">
+            +358 Finland
+        </option>
+                <option value="+351" data-country="Portugal">
+            +351 Portugal
+        </option>
+                <option value="+7" data-country="Russia">
+            +7 Russia
+        </option>
+                <option value="+48" data-country="Poland">
+            +48 Poland
+        </option>
+                <option value="+1" data-country="United States">
+            +1 United States
+        </option>
+                <option value="+1" data-country="Canada">
+            +1 Canada
+        </option>
+                <option value="+55" data-country="Brazil">
+            +55 Brazil
+        </option>
+                <option value="+54" data-country="Argentina">
+            +54 Argentina
+        </option>
+                <option value="+52" data-country="Mexico">
+            +52 Mexico
+        </option>
+                <option value="+966" data-country="Saudi Arabia">
+            +966 Saudi Arabia
+        </option>
+                <option value="+971" data-country="United Arab Emirates">
+            +971 United Arab Emirates
+        </option>
+                <option value="+974" data-country="Qatar">
+            +974 Qatar
+        </option>
+                <option value="+965" data-country="Kuwait">
+            +965 Kuwait
+        </option>
+                <option value="+90" data-country="Turkey">
+            +90 Turkey
+        </option>
+                <option value="+962" data-country="Jordan">
+            +962 Jordan
+        </option>
+                <option value="+961" data-country="Lebanon">
+            +961 Lebanon
+        </option>
+                <option value="+86" data-country="China">
+            +86 China
+        </option>
+                <option value="+81" data-country="Japan">
+            +81 Japan
+        </option>
+                <option value="+91" data-country="India">
+            +91 India
+        </option>
+                <option value="+92" data-country="Pakistan">
+            +92 Pakistan
+        </option>
+                <option value="+880" data-country="Bangladesh">
+            +880 Bangladesh
+        </option>
+                <option value="+94" data-country="Sri Lanka">
+            +94 Sri Lanka
+        </option>
+                <option value="+977" data-country="Nepal">
+            +977 Nepal
+        </option>
+                <option value="+62" data-country="Indonesia">
+            +62 Indonesia
+        </option>
+                <option value="+60" data-country="Malaysia">
+            +60 Malaysia
+        </option>
+                <option value="+66" data-country="Thailand">
+            +66 Thailand
+        </option>
+                <option value="+63" data-country="Philippines">
+            +63 Philippines
+        </option>
+                <option value="+61" data-country="Australia">
+            +61 Australia
+        </option>
+                <option value="+64" data-country="New Zealand">
+            +64 New Zealand
+        </option>
+            </select>
+    <input type="tel" name="phone_number" id="pub_book_num" class="form-control " value="" placeholder="e.g. 755353739" required="">
+        </div>
+<div class="form-text" style="font-size:.78rem;">Enter number without country code. E.g. 755353739</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="email">Email Address <span class="text-muted">(optional)</span></label>
+                        <input type="email" id="email" name="email" class="form-control " value="" placeholder="you@example.com">
+                                            </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="pub_book_nat">
+    Nationality <span class="text-danger">*</span></label>
+
+<select name="nationality" id="pub_book_nat" class="form-select  " required="">
+    <option value="">Select nationality…</option>
+        <option value="Tanzanian" data-code="+255" selected="">
+        Tanzanian (Tanzania)
+    </option>
+        <option value="Kenyan" data-code="+254">
+        Kenyan (Kenya)
+    </option>
+        <option value="Ugandan" data-code="+256">
+        Ugandan (Uganda)
+    </option>
+        <option value="Rwandan" data-code="+250">
+        Rwandan (Rwanda)
+    </option>
+        <option value="Burundian" data-code="+257">
+        Burundian (Burundi)
+    </option>
+        <option value="Congolese" data-code="+243">
+        Congolese (DR Congo)
+    </option>
+        <option value="Ethiopian" data-code="+251">
+        Ethiopian (Ethiopia)
+    </option>
+        <option value="Somali" data-code="+252">
+        Somali (Somalia)
+    </option>
+        <option value="Eritrean" data-code="+291">
+        Eritrean (Eritrea)
+    </option>
+        <option value="Djiboutian" data-code="+253">
+        Djiboutian (Djibouti)
+    </option>
+        <option value="Sudanese" data-code="+249">
+        Sudanese (Sudan)
+    </option>
+        <option value="South Sudanese" data-code="+211">
+        South Sudanese (South Sudan)
+    </option>
+        <option value="Mozambican" data-code="+258">
+        Mozambican (Mozambique)
+    </option>
+        <option value="Malawian" data-code="+265">
+        Malawian (Malawi)
+    </option>
+        <option value="Zambian" data-code="+260">
+        Zambian (Zambia)
+    </option>
+        <option value="Zimbabwean" data-code="+263">
+        Zimbabwean (Zimbabwe)
+    </option>
+        <option value="South African" data-code="+27">
+        South African (South Africa)
+    </option>
+        <option value="Botswanan" data-code="+267">
+        Botswanan (Botswana)
+    </option>
+        <option value="Namibian" data-code="+264">
+        Namibian (Namibia)
+    </option>
+        <option value="Basotho" data-code="+266">
+        Basotho (Lesotho)
+    </option>
+        <option value="Swazi" data-code="+268">
+        Swazi (Eswatini)
+    </option>
+        <option value="Angolan" data-code="+244">
+        Angolan (Angola)
+    </option>
+        <option value="Malagasy" data-code="+261">
+        Malagasy (Madagascar)
+    </option>
+        <option value="Mauritian" data-code="+230">
+        Mauritian (Mauritius)
+    </option>
+        <option value="Seychellois" data-code="+248">
+        Seychellois (Seychelles)
+    </option>
+        <option value="Comorian" data-code="+269">
+        Comorian (Comoros)
+    </option>
+        <option value="Nigerian" data-code="+234">
+        Nigerian (Nigeria)
+    </option>
+        <option value="Ghanaian" data-code="+233">
+        Ghanaian (Ghana)
+    </option>
+        <option value="Cameroonian" data-code="+237">
+        Cameroonian (Cameroon)
+    </option>
+        <option value="Senegalese" data-code="+221">
+        Senegalese (Senegal)
+    </option>
+        <option value="Ivorian" data-code="+225">
+        Ivorian (Ivory Coast)
+    </option>
+        <option value="Gabonese" data-code="+241">
+        Gabonese (Gabon)
+    </option>
+        <option value="Congolese" data-code="+242">
+        Congolese (Republic of Congo)
+    </option>
+        <option value="Central African" data-code="+236">
+        Central African (Central African Rep.)
+    </option>
+        <option value="Chadian" data-code="+235">
+        Chadian (Chad)
+    </option>
+        <option value="Nigerien" data-code="+227">
+        Nigerien (Niger)
+    </option>
+        <option value="Malian" data-code="+223">
+        Malian (Mali)
+    </option>
+        <option value="Burkinabe" data-code="+226">
+        Burkinabe (Burkina Faso)
+    </option>
+        <option value="Guinean" data-code="+224">
+        Guinean (Guinea)
+    </option>
+        <option value="Sierra Leonean" data-code="+232">
+        Sierra Leonean (Sierra Leone)
+    </option>
+        <option value="Liberian" data-code="+231">
+        Liberian (Liberia)
+    </option>
+        <option value="Gambian" data-code="+220">
+        Gambian (Gambia)
+    </option>
+        <option value="Beninese" data-code="+229">
+        Beninese (Benin)
+    </option>
+        <option value="Togolese" data-code="+228">
+        Togolese (Togo)
+    </option>
+        <option value="Egyptian" data-code="+20">
+        Egyptian (Egypt)
+    </option>
+        <option value="Moroccan" data-code="+212">
+        Moroccan (Morocco)
+    </option>
+        <option value="Algerian" data-code="+213">
+        Algerian (Algeria)
+    </option>
+        <option value="Tunisian" data-code="+216">
+        Tunisian (Tunisia)
+    </option>
+        <option value="Libyan" data-code="+218">
+        Libyan (Libya)
+    </option>
+        <option value="British" data-code="+44">
+        British (United Kingdom)
+    </option>
+        <option value="German" data-code="+49">
+        German (Germany)
+    </option>
+        <option value="French" data-code="+33">
+        French (France)
+    </option>
+        <option value="Italian" data-code="+39">
+        Italian (Italy)
+    </option>
+        <option value="Spanish" data-code="+34">
+        Spanish (Spain)
+    </option>
+        <option value="Dutch" data-code="+31">
+        Dutch (Netherlands)
+    </option>
+        <option value="Belgian" data-code="+32">
+        Belgian (Belgium)
+    </option>
+        <option value="Swiss" data-code="+41">
+        Swiss (Switzerland)
+    </option>
+        <option value="Swedish" data-code="+46">
+        Swedish (Sweden)
+    </option>
+        <option value="Norwegian" data-code="+47">
+        Norwegian (Norway)
+    </option>
+        <option value="Danish" data-code="+45">
+        Danish (Denmark)
+    </option>
+        <option value="Finnish" data-code="+358">
+        Finnish (Finland)
+    </option>
+        <option value="Portuguese" data-code="+351">
+        Portuguese (Portugal)
+    </option>
+        <option value="Russian" data-code="+7">
+        Russian (Russia)
+    </option>
+        <option value="Polish" data-code="+48">
+        Polish (Poland)
+    </option>
+        <option value="American" data-code="+1">
+        American (United States)
+    </option>
+        <option value="Canadian" data-code="+1">
+        Canadian (Canada)
+    </option>
+        <option value="Brazilian" data-code="+55">
+        Brazilian (Brazil)
+    </option>
+        <option value="Argentine" data-code="+54">
+        Argentine (Argentina)
+    </option>
+        <option value="Mexican" data-code="+52">
+        Mexican (Mexico)
+    </option>
+        <option value="Saudi" data-code="+966">
+        Saudi (Saudi Arabia)
+    </option>
+        <option value="Emirati" data-code="+971">
+        Emirati (United Arab Emirates)
+    </option>
+        <option value="Qatari" data-code="+974">
+        Qatari (Qatar)
+    </option>
+        <option value="Kuwaiti" data-code="+965">
+        Kuwaiti (Kuwait)
+    </option>
+        <option value="Turkish" data-code="+90">
+        Turkish (Turkey)
+    </option>
+        <option value="Jordanian" data-code="+962">
+        Jordanian (Jordan)
+    </option>
+        <option value="Lebanese" data-code="+961">
+        Lebanese (Lebanon)
+    </option>
+        <option value="Chinese" data-code="+86">
+        Chinese (China)
+    </option>
+        <option value="Japanese" data-code="+81">
+        Japanese (Japan)
+    </option>
+        <option value="Indian" data-code="+91">
+        Indian (India)
+    </option>
+        <option value="Pakistani" data-code="+92">
+        Pakistani (Pakistan)
+    </option>
+        <option value="Bangladeshi" data-code="+880">
+        Bangladeshi (Bangladesh)
+    </option>
+        <option value="Sri Lankan" data-code="+94">
+        Sri Lankan (Sri Lanka)
+    </option>
+        <option value="Nepali" data-code="+977">
+        Nepali (Nepal)
+    </option>
+        <option value="Indonesian" data-code="+62">
+        Indonesian (Indonesia)
+    </option>
+        <option value="Malaysian" data-code="+60">
+        Malaysian (Malaysia)
+    </option>
+        <option value="Thai" data-code="+66">
+        Thai (Thailand)
+    </option>
+        <option value="Filipino" data-code="+63">
+        Filipino (Philippines)
+    </option>
+        <option value="Australian" data-code="+61">
+        Australian (Australia)
+    </option>
+        <option value="New Zealander" data-code="+64">
+        New Zealander (New Zealand)
+    </option>
+    </select>
+                    </div>
+                    <div class="col-12">
+                        <input type="hidden" name="residency_type" id="residency_type" value="resident">
+                        <label class="form-label">Pricing Category</label>
+                        <div id="residencyDisplay" class="d-flex align-items-center gap-2 p-2 rounded border bg-light">
+                            <span id="residencyBadge">
+                                                                    <span class="badge bg-success fs-6 px-3 py-2">
+                                        <i class="bi bi-house-door me-1"></i>Resident Rate
+                                    </span>
+                                                            </span>
+                            <span class="text-muted small">Auto-detected from your nationality</span>
+                        </div>
+                                            </div>
+                </div>
+
+                
+                <div class="section-divider mt-4"><i class="bi bi-door-open"></i> Room &amp; Dates</div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="location_id">Location <span class="text-danger">*</span></label>
+                        <select id="location_id" name="location_id" class="form-select " required="">
+                            <option value="">— Select location —</option>
+                                                            <option value="2">
+                                    Annex
+                                </option>
+                                                            <option value="1">
+                                    Bukoba Hotel Main
+                                </option>
+                                                            <option value="3">
+                                    Chato
+                                </option>
+                                                    </select>
+                                            </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="room_type_id">Room Type <span class="text-danger">*</span></label>
+                        <select id="room_type_id" name="room_type_id" class="form-select " required="" disabled="">
+                            <option value="">— Select location first —</option>
+                        </select>
+                                                <div id="roomTypeInfo" class="mt-1 text-muted small" style="min-height:18px;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="check_in_date">Check-in Date <span class="text-danger">*</span></label>
+                        <input type="date" id="check_in_date" name="check_in_date" class="form-control " value="" min="2026-09-12" required="">
+                                            </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="check_out_date">Check-out Date <span class="text-danger">*</span></label>
+                        <input type="date" id="check_out_date" name="check_out_date" class="form-control " value="" min="2026-09-13" required="">
+                                            </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="adults">Adults <span class="text-danger">*</span></label>
+                        <select id="adults" name="adults" class="form-select " required="">
+                                                            <option value="1" selected="">
+                                    1 Adult
+                                </option>
+                                                            <option value="2">
+                                    2 Adults
+                                </option>
+                                                            <option value="3">
+                                    3 Adults
+                                </option>
+                                                            <option value="4">
+                                    4 Adults
+                                </option>
+                                                            <option value="5">
+                                    5 Adults
+                                </option>
+                                                            <option value="6">
+                                    6 Adults
+                                </option>
+                                                    </select>
+                                            </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="children">Children</label>
+                        <select id="children" name="children" class="form-select ">
+                                                            <option value="0" selected="">
+                                    0 Children
+                                </option>
+                                                            <option value="1">
+                                    1 Child
+                                </option>
+                                                            <option value="2">
+                                    2 Children
+                                </option>
+                                                            <option value="3">
+                                    3 Children
+                                </option>
+                                                            <option value="4">
+                                    4 Children
+                                </option>
+                                                    </select>
+                                            </div>
+                </div>
+
+                
+                <div class="section-divider mt-4"><i class="bi bi-car-front"></i> Airport Pickup</div>
+
+                <div id="pickupSection">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="airport_pickup_required" name="airport_pickup_required" value="1">
+                        <label class="form-check-label fw-500" for="airport_pickup_required">
+                            I need airport pickup
+                        </label>
+                        <div id="pickupPriceInfo" class="text-muted small mt-1" style="display:none;"></div>
+                    </div>
+
+                    <div id="pickupDetails" class="pickup-card" style="display:none;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="arrival_datetime">Arrival Date &amp; Time <span class="text-danger">*</span></label>
+                                <input type="datetime-local" id="arrival_datetime" name="arrival_datetime" class="form-control " value="">
+                                                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="pickup_notes">Pickup Notes <span class="text-muted">(optional)</span></label>
+                                <input type="text" id="pickup_notes" name="pickup_notes" class="form-control " value="" placeholder="e.g. Flight KQ202 arriving at 14:30">
+                                                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="section-divider mt-4"><i class="bi bi-chat-dots"></i> Special Request</div>
+
+                <div>
+                    <textarea id="special_request" name="special_request" rows="3" class="form-control " placeholder="Any special requirements? E.g. early check-in, dietary needs, accessibility needs..."></textarea>
+                                        <div class="form-text">Optional. Max 1,000 characters.</div>
+                </div>
+
+                
+                <div id="pricingSummary" class="pricing-summary mt-4" style="display:none;">
+                    <div class="fw-600 mb-2 text-dark" style="font-size:.85rem; font-weight:600;">
+                        <i class="bi bi-receipt me-1"></i> Estimated Cost
+                    </div>
+                    <div class="price-row">
+                        <span id="priceRoomLabel">Base Amount</span>
+                        <span class="price-value" id="priceRoomValue">—</span>
+                    </div>
+                    <div class="price-row" id="priceVatRow">
+                        <span id="priceVatLabel">VAT (incl. in price)</span>
+                        <span class="price-value" id="priceVatValue">—</span>
+                    </div>
+                    <div class="price-row" id="pricePickupRow" style="display:none;">
+                        <span>Airport Pickup</span>
+                        <span class="price-value" id="pricePickupValue">—</span>
+                    </div>
+                    <div class="price-row total-row">
+                        <span>Grand Total</span>
+                        <span class="price-value text-success" id="priceTotalValue">—</span>
+                    </div>
+                    <p class="text-muted mb-0 mt-2" style="font-size:.75rem;">
+                        <i class="bi bi-info-circle me-1"></i>
+                        This is an estimated cost. Final amount will be confirmed at check-in. Payment is made at the hotel.
+                    </p>
+                </div>
+
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-book" id="submitBtn">
+                        <i class="bi bi-calendar-check me-2"></i>Submit Booking Request
+                    </button>
+                    <div class="trust-section">
+                        <div class="trust-item"><i class="bi bi-shield-lock-fill"></i> Secure Booking</div>
+                        <div class="trust-item"><i class="bi bi-clock-fill"></i> 24hr Confirmation</div>
+                        <div class="trust-item"><i class="bi bi-cash-coin"></i> Pay at Hotel</div>
+                        <div class="trust-item"><i class="bi bi-headset"></i> 24/7 Support</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+        <div class="container">
+            <p class="mb-0">© 2026 ELCT Bukoba Hotel &amp; Tours. All rights reserved.</p>
+            <p class="mt-1 mb-0">For assistance, please call Tel: +255 754 415 404, email info@elctbukobahotelandtours.com or visit the front desk.</p>
+        </div>
+    </footer>
+
+    <script src="./Book a Room_files/bootstrap.bundle.min.js.download"></script>
+    <script>
+(function () {
+    'use strict';
+
+    const csrfToken     = document.querySelector('meta[name="csrf-token"]').content;
+    const locationSel   = document.getElementById('location_id');
+    const roomTypeSel   = document.getElementById('room_type_id');
+    const roomTypeInfo  = document.getElementById('roomTypeInfo');
+    const checkInEl     = document.getElementById('check_in_date');
+    const checkOutEl    = document.getElementById('check_out_date');
+    const adultsEl      = document.getElementById('adults');
+    const childrenEl    = document.getElementById('children');
+    const residencyInput  = document.getElementById('residency_type');
+    const residencyBadge  = document.getElementById('residencyBadge');
+    const pickupCheck   = document.getElementById('airport_pickup_required');
+    const pickupDetails = document.getElementById('pickupDetails');
+    const pickupPriceInfo = document.getElementById('pickupPriceInfo');
+    const pricingSummary  = document.getElementById('pricingSummary');
+
+    let currentRoomTypes   = [];
+    let currentPickupSetting = null;
+
+    // ── Utility ──────────────────────────────────────────────
+    function fmt(amount, currency) {
+        if (currency === 'USD') {
+            return '$ ' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        return 'TZS ' + Math.round(Number(amount)).toLocaleString('en-US');
+    }
+
+    function getNights() {
+        if (!checkInEl.value || !checkOutEl.value) return 0;
+        const d1 = new Date(checkInEl.value);
+        const d2 = new Date(checkOutEl.value);
+        const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+        return diff > 0 ? diff : 0;
+    }
+
+    function getResidency() {
+        return residencyInput ? residencyInput.value : 'resident';
+    }
+
+    function resolveResidencyFromNationality(nationality) {
+        if (!nationality) return 'resident';
+        return nationality.toLowerCase().indexOf('tanzania') !== -1 ? 'resident' : 'foreigner';
+    }
+
+    function updateResidencyBadge(residency) {
+        if (!residencyInput || !residencyBadge) return;
+        residencyInput.value = residency;
+        if (residency === 'foreigner') {
+            residencyBadge.innerHTML = '<span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="bi bi-globe2 me-1"></i>Foreigner Rate</span>';
+        } else {
+            residencyBadge.innerHTML = '<span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-house-door me-1"></i>Resident Rate</span>';
+        }
+    }
+
+    // ── Load room types via AJAX ──────────────────────────────
+    function loadRoomTypes(locationId) {
+        roomTypeSel.disabled   = true;
+        roomTypeSel.innerHTML  = '<option value="">Loading...</option>';
+        roomTypeInfo.textContent = '';
+        currentRoomTypes = [];
+        currentPickupSetting = null;
+
+        fetch('/book/room-types?location_id=' + encodeURIComponent(locationId), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            currentRoomTypes     = data.room_types || [];
+            currentPickupSetting = data.pickup_setting || null;
+
+            roomTypeSel.innerHTML = '<option value="">— Select room type —</option>';
+
+            if (currentRoomTypes.length === 0) {
+                roomTypeSel.innerHTML = '<option value="">No room types available</option>';
+                roomTypeSel.disabled = true;
+            } else {
+                currentRoomTypes.forEach(rt => {
+                    const opt = document.createElement('option');
+                    opt.value = rt.id;
+                    opt.textContent = rt.name + ' (Adults: ' + rt.capacity_adults + ', Children: ' + rt.capacity_children + ')';
+                    opt.dataset.roomType = JSON.stringify(rt);
+                    roomTypeSel.appendChild(opt);
+                });
+                roomTypeSel.disabled = false;
+            }
+
+            // Restore old selection if any
+            const oldRoomTypeId = '';
+            if (oldRoomTypeId) {
+                roomTypeSel.value = oldRoomTypeId;
+            }
+
+            updatePickupInfo();
+            updatePricing();
+        })
+        .catch(() => {
+            roomTypeSel.innerHTML = '<option value="">Error loading room types</option>';
+            roomTypeSel.disabled = true;
+        });
+    }
+
+    // ── Update pickup info display ────────────────────────────
+    function updatePickupInfo() {
+        if (currentPickupSetting && currentPickupSetting.is_active) {
+            let msg = 'Pickup: ' + fmt(currentPickupSetting.price_per_person, currentPickupSetting.currency) + ' per person';
+            if (!currentPickupSetting.charge_children) msg += ' (adults only)';
+            pickupPriceInfo.textContent = msg;
+            pickupPriceInfo.style.display = 'block';
+        } else {
+            pickupPriceInfo.textContent = 'Airport pickup is not available for this location.';
+            pickupPriceInfo.style.display = 'block';
+            pickupCheck.checked = false;
+            pickupCheck.disabled = !currentPickupSetting || !currentPickupSetting.is_active;
+            pickupDetails.style.display = 'none';
+        }
+    }
+
+    // ── Update room type description ──────────────────────────
+    function updateRoomTypeInfo() {
+        const selectedOpt = roomTypeSel.options[roomTypeSel.selectedIndex];
+        if (!selectedOpt || !selectedOpt.dataset.roomType) {
+            roomTypeInfo.textContent = '';
+            return;
+        }
+        const rt = JSON.parse(selectedOpt.dataset.roomType);
+        if (rt.description) {
+            roomTypeInfo.textContent = rt.description;
+        }
+    }
+
+    // ── Calculate & render pricing ────────────────────────────
+    function updatePricing() {
+        const nights    = getNights();
+        const residency = getResidency();
+        const adults    = parseInt(adultsEl.value) || 1;
+        const children  = parseInt(childrenEl.value) || 0;
+
+        const selectedOpt = roomTypeSel.options[roomTypeSel.selectedIndex];
+        if (!selectedOpt || !selectedOpt.dataset.roomType || nights === 0) {
+            pricingSummary.style.display = 'none';
+            return;
+        }
+
+        const rt = JSON.parse(selectedOpt.dataset.roomType);
+        const rates = rt.room_rates || [];
+        if (rates.length === 0) {
+            pricingSummary.style.display = 'none';
+            return;
+        }
+        const rate = rates[0];
+
+        let currency, basePrice;
+        if (residency === 'resident') {
+            currency  = 'TZS';
+            basePrice = parseFloat(rate.resident_price_tzs);
+        } else if (rate.foreigner_price_usd) {
+            currency  = 'USD';
+            basePrice = parseFloat(rate.foreigner_price_usd);
+        } else {
+            currency  = 'TZS';
+            basePrice = parseFloat(rate.foreigner_price);
+        }
+
+        // Quoted room rates are VAT-inclusive: the price shown/charged per night
+        // already contains VAT, so it is split back out for display, not added
+        // on top. This must mirror the backend calculation exactly (see
+        // PublicBookingController::store) so the estimate matches what's booked.
+        const roomTotal  = basePrice * nights;
+        const vatPct     = parseFloat(rate.vat_percentage) || 0;
+        const baseAmount = vatPct > 0 ? roomTotal / (1 + vatPct / 100) : roomTotal;
+        const vatAmount  = roomTotal - baseAmount;
+
+        let pickupTotal = 0;
+        const showPickup = pickupCheck.checked && currentPickupSetting && currentPickupSetting.is_active;
+        if (showPickup) {
+            let persons = adults;
+            if (currentPickupSetting.charge_children) persons += children;
+            pickupTotal = parseFloat(currentPickupSetting.price_per_person) * persons;
+        }
+
+        const grandTotal = roomTotal + pickupTotal;
+
+        // Update DOM
+        document.getElementById('priceRoomLabel').textContent = 'Base Amount (' + nights + ' night' + (nights !== 1 ? 's' : '') + ' @ ' + fmt(basePrice, currency) + ')';
+        document.getElementById('priceRoomValue').textContent = fmt(baseAmount, currency);
+        document.getElementById('priceVatLabel').textContent  = 'VAT (' + vatPct + '% incl. in price)';
+        document.getElementById('priceVatValue').textContent  = fmt(vatAmount, currency);
+
+        const pickupRow = document.getElementById('pricePickupRow');
+        if (showPickup) {
+            document.getElementById('pricePickupValue').textContent = fmt(pickupTotal, currency);
+            pickupRow.style.display = '';
+        } else {
+            pickupRow.style.display = 'none';
+        }
+
+        document.getElementById('priceTotalValue').textContent = fmt(grandTotal, currency);
+        pricingSummary.style.display = '';
+    }
+
+    // ── Event listeners ───────────────────────────────────────
+    locationSel.addEventListener('change', function () {
+        if (this.value) {
+            loadRoomTypes(this.value);
+        } else {
+            roomTypeSel.disabled = true;
+            roomTypeSel.innerHTML = '<option value="">— Select location first —</option>';
+            pricingSummary.style.display = 'none';
+        }
+    });
+
+    roomTypeSel.addEventListener('change', function () {
+        updateRoomTypeInfo();
+        updatePricing();
+    });
+
+    [checkInEl, checkOutEl].forEach(el => {
+        el.addEventListener('change', function () {
+            // Ensure checkout > checkin
+            if (checkInEl.value && checkOutEl.value) {
+                if (checkOutEl.value <= checkInEl.value) {
+                    const d = new Date(checkInEl.value);
+                    d.setDate(d.getDate() + 1);
+                    checkOutEl.value = d.toISOString().split('T')[0];
+                }
+            }
+            updatePricing();
+        });
+    });
+
+    adultsEl.addEventListener('change', updatePricing);
+    childrenEl.addEventListener('change', updatePricing);
+
+    pickupCheck.addEventListener('change', function () {
+        pickupDetails.style.display = this.checked ? '' : 'none';
+        updatePricing();
+    });
+
+    // ── On page load: restore state if old values present ────
+    if (locationSel.value) {
+        loadRoomTypes(locationSel.value);
+    }
+
+    // Set min dates
+    const today    = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+    checkInEl.min  = today;
+    checkOutEl.min = tomorrow;
+
+})();
+
+// Nationality → auto-detect residency + auto-link country code
+(function () {
+    var natSel  = document.getElementById('pub_book_nat');
+    var codeSel = document.getElementById('pub_book_code');
+    if (!natSel) return;
+
+    function onNationalityChange() {
+        // Update residency
+        if (typeof updateResidencyBadge === 'function' && typeof resolveResidencyFromNationality === 'function') {
+            var residency = resolveResidencyFromNationality(natSel.value);
+            updateResidencyBadge(residency);
+            if (typeof updatePricing === 'function') updatePricing();
+        }
+        // Auto-link phone code
+        if (codeSel) {
+            var code = natSel.options[natSel.selectedIndex].getAttribute('data-code');
+            if (!code) return;
+            for (var i = 0; i < codeSel.options.length; i++) {
+                if (codeSel.options[i].value === code) { codeSel.selectedIndex = i; break; }
+            }
+        }
+    }
+
+    natSel.addEventListener('change', onNationalityChange);
+    // Trigger on load to set initial state
+    if (natSel.value) onNationalityChange();
+})();
+</script>
+
+
+<script src="widget/knowledge.js"></script>
+<script src="widget/widget.js"></script>
+<script src="premium/premium.js"></script>
+</body></html>
