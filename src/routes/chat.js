@@ -4,6 +4,9 @@ const { buildSystemPrompt } = require('../systemPrompt');
 const { preCheck, postCheck, detectLang } = require('../guardrails');
 const { chatCompletion } = require('../groqClient');
 const { parseModelOutput } = require('../responseParser');
+const { createBooking } = require('../bookingService');
+const { bookingTicketText, sendWhatsAppText } = require('../whatsapp');
+const { query: dbQuery } = require('../db');
 const { buildHandoffLink } = require('../whatsapp');
 
 const router = express.Router();
@@ -42,10 +45,15 @@ router.post('/chat', async (req, res) => {
   const systemPrompt = buildSystemPrompt({ contextText: buildContextText(chunks) });
 
   try {
+    const safeHistory = Array.isArray(history) ? history : [];
+    const looksLikeBooking = /\b(book|booking|reserve|reservation|room|stay|check[- ]?in|check[- ]?out|availability)\b/i.test(
+      `${safeHistory.map((m) => m && m.text ? m.text : '').join(' ')} ${message}`
+    );
     const completion = await chatCompletion({
       systemPrompt,
-      history: Array.isArray(history) ? history : [],
+      history: safeHistory,
       userMessage: message,
+      cacheable: !looksLikeBooking,
     });
 
     // Pull the LANG / HANDOFF_READY / SUGGESTIONS markers back out before
@@ -74,6 +82,51 @@ router.post('/chat', async (req, res) => {
     }
     if (checked.safe && parsed.suggestions && parsed.suggestions.length) {
       response.suggestions = parsed.suggestions;
+    }
+
+    // Real booking action: the LLM only proposes structured booking data;
+    // the backend validates availability and creates the reservation.
+    if (checked.safe && parsed.bookingData && process.env.DATABASE_URL) {
+      const b = parsed.bookingData;
+      const required = ['guestName', 'phone', 'propertyId', 'roomType', 'checkIn', 'checkOut', 'guestsCount'];
+      const complete = required.every((key) => b[key] !== null && b[key] !== undefined && b[key] !== '');
+
+      if (complete) {
+        try {
+          const booking = await createBooking(b);
+          const ticket = bookingTicketText(booking);
+          response.booking = {
+            reference: booking.booking_reference,
+            status: booking.status,
+            ticket,
+          };
+          response.reply = `${response.reply}\n\nBooking confirmed: **${booking.booking_reference}**. A confirmation ticket is being sent to your WhatsApp.`;
+
+          try {
+            const notification = await sendWhatsAppText(booking.guest.phone, ticket);
+            response.whatsapp_notification = notification;
+            await dbQuery(
+              `INSERT INTO notification_log (booking_id, channel, recipient, notification_type, status, provider_message_id, error) VALUES ($1,'whatsapp',$2,'booking_confirmation',$3,$4,$5)`,
+              [booking.id, booking.guest.phone, 'booking_confirmation', notification.sent ? 'sent' : 'not_configured', notification.providerMessageId || null, notification.reason || null]
+            );
+          } catch (notifyErr) {
+            console.error('[chat][whatsapp] confirmation failed:', notifyErr.message);
+            response.whatsapp_notification = { sent: false, reason: 'DELIVERY_FAILED' };
+            await dbQuery(
+              `INSERT INTO notification_log (booking_id, channel, recipient, notification_type, status, error) VALUES ($1,'whatsapp',$2,'booking_confirmation','failed',$3)`,
+              [booking.id, booking.guest.phone, notifyErr.message]
+            );
+          }
+        } catch (bookingErr) {
+          const messages = {
+            NO_AVAILABILITY: 'I’m sorry, that room is no longer available for those dates. Let me check another room option with you.',
+            ROOM_TYPE_NOT_FOUND: 'I could not match that room type to our live booking inventory. Please choose one of the room types shown on the website.',
+            ROOM_CAPACITY_EXCEEDED: 'That room cannot accommodate the number of guests requested. Let’s choose a larger room.',
+          };
+          response.booking_error = bookingErr.message;
+          response.reply = messages[bookingErr.message] || 'I have the booking details, but I could not complete the reservation yet. Please check the details and try again.';
+        }
+      }
     }
 
     return res.json(response);

@@ -4,6 +4,8 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 
 const chatRoute = require('./src/routes/chat');
+const bookingsRoute = require('./src/routes/bookings');
+const { initializeDatabase } = require('./src/dbInit');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,12 +40,15 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api', chatRoute);
+app.use('/api/bookings', bookingsRoute);
 
 // Never leak internal error details to the client
 app.use((err, req, res, next) => {
   console.error('[unhandled]', err);
   res.status(500).json({ error: 'Internal server error' });
 });
+
+initializeDatabase().catch((err) => console.error('[db] initialization failed:', err.message));
 
 app.listen(PORT, () => {
   console.log(`ELCT Bukoba concierge backend listening on port ${PORT}`);

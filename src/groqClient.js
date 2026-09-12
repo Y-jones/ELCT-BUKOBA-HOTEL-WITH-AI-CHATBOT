@@ -92,8 +92,9 @@ async function chatCompletion({
   systemPrompt,
   history = [],
   userMessage,
+  cacheable = true,
 }) {
-  const isFreshQuestion = history.length === 0;
+  const isFreshQuestion = history.length === 0 && cacheable;
 
   if (isFreshQuestion) {
     const cached = getCached(userMessage);
