@@ -1394,8 +1394,8 @@
             const notification = data.notification || {};
 
             const cleanTicket = [
-                '🎫 ELCT BUKOBA HOTEL & TOURS',
-                'BOOKING CONFIRMED ✅',
+                'ELCT BUKOBA HOTEL & TOURS',
+                'BOOKING CONFIRMED ',
                 '',
                 'Booking: ' + booking.booking_reference,
                 'Guest: ' + (booking.guest_name || fullName),
@@ -1407,11 +1407,11 @@
                 'Total: ' + booking.currency + ' ' + Number(booking.total_amount).toLocaleString('en-US'),
                 '',
                 'Please keep this booking reference and present it when you arrive.',
-                'Karibu sana — we look forward to welcoming you! 🌿'
+                'Karibu sana — we look forward to welcoming you!'
             ].join('\n');
 
             bookingResult.className = 'alert alert-success mt-4';
-            bookingResult.innerHTML = '<h5 class="alert-heading mb-2">🎉 Booking confirmed</h5>' +
+            bookingResult.innerHTML = '<h5 class="alert-heading mb-2"> Booking confirmed</h5>' +
                 '<p class="mb-2"><strong>Booking reference:</strong> ' + escapeHtml(booking.booking_reference) + '</p>' +
                 '<p class="mb-2"><strong>Room:</strong> ' + escapeHtml(booking.room_type) + '<br>' +
                 '<strong>Check-in:</strong> ' + escapeHtml(formatBookingDate(booking.check_in)) + '<br>' +
