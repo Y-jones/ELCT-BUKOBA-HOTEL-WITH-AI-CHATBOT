@@ -350,7 +350,7 @@
     if (state.open && launcher) launcher.classList.remove('cw-pulse');
     if (state.open && state.history.length === 0) {
       addMessage('bot', STR[state.lang].greeting + '<p style="margin-top:10px;font-size:11px;color:#8A7B6A;">' + STR[state.lang].protoNote + '</p>');
-      state.history.push({ role: 'bot', text: STR[state.lang].greeting });
+      state.history.push({ role: 'bot' });
     }
     if (state.open) document.getElementById('cw-input').focus();
   }
