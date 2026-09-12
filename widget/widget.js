@@ -31,7 +31,6 @@
       quick: ['Rooms', 'Restaurant', 'Conference Facilities', 'Book a Room', 'Hotel Location', 'Get Directions', 'Contact Hotel'],
       humanChip: 'Talk to a human',
       humanText: "Hi, I'd like to speak with someone at the hotel.",
-      protoNote: "(Prototype note: answers here are matched from the hotel's own published details — the full AI assistant connects once the backend is built.)"
     },
     sw: {
       title: 'ELCT BUKOBA HOTEL AI ASSISTANT',
