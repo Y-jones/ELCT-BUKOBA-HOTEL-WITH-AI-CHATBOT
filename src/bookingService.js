@@ -77,16 +77,22 @@ async function createBooking(input) {
   if (guestsCount < 1) throw new Error('Guest count must be at least 1');
 
   return withTransaction(async (client) => {
+    // Do not use FOR UPDATE on a LEFT JOIN: PostgreSQL rejects locking the nullable side.
+    // First locate the room type, then lock that room_types row separately.
     const roomResult = await client.query(
       `SELECT rt.*, COALESCE(ri.total_units,0) AS total_units
        FROM room_types rt
        LEFT JOIN room_inventory ri ON ri.room_type_id=rt.id
-       WHERE rt.property_id=$1 AND rt.active=true AND LOWER(rt.name)=LOWER($2)
-       FOR UPDATE`,
+       WHERE rt.property_id=$1 AND rt.active=true AND LOWER(rt.name)=LOWER($2)`,
       [propertyId, roomType]
     );
     const room = roomResult.rows[0];
     if (!room) throw new Error('ROOM_TYPE_NOT_FOUND');
+
+    await client.query(
+      `SELECT id FROM room_types WHERE id=$1 FOR UPDATE`,
+      [room.id]
+    );
     if (guestsCount > Number(room.capacity_guests)) throw new Error('ROOM_CAPACITY_EXCEEDED');
 
     const reservedResult = await client.query(
