@@ -283,11 +283,15 @@
       });
   }
 
-  // Plain-text replies (from the backend) get escaped + linebreak-converted;
-  // the local demo matcher already returns deliberate HTML (lists, bold) so
-  // it passes straight through.
+  // Plain-text replies (from the backend) get escaped + linebreak-converted,
+  // and markdown-style **bold** is converted to real <strong> tags before
+  // the line-break formatting runs; the local demo matcher already returns
+  // deliberate HTML (lists, bold) so it passes straight through untouched.
   function renderPlainTextReply(text) {
-    return '<p>' + escapeHtml(text).replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+    return '<p>' + escapeHtml(text)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n{2,}/g, '</p><p>')
+      .replace(/\n/g, '<br>') + '</p>';
   }
 
   function sendUserMessage(text) {
