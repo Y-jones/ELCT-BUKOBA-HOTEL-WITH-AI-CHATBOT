@@ -2,6 +2,7 @@ const express = require('express');
 const { availability, createBooking, getBooking } = require('../bookingService');
 const { query } = require('../db');
 const { bookingTicketText, sendWhatsAppText } = require('../whatsapp');
+const { KB } = require('../retrieval');
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.get('/availability', async (req, res) => {
   if (!dbReady(res)) return;
   try {
     const rows = await availability({
-      propertyId: req.query.property_id,
+      propertyId: req.query.property_id || KB.locations[0].id,
       roomType: req.query.room_type || null,
       checkIn: req.query.check_in,
       checkOut: req.query.check_out,
