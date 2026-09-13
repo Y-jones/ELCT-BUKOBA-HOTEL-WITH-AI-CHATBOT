@@ -71,12 +71,18 @@ CREATE TABLE IF NOT EXISTS requests (
   guest_id UUID REFERENCES guests(id),
   property_id TEXT REFERENCES properties(id),
   type TEXT NOT NULL,
+  reference TEXT UNIQUE,
+  quoted_amount NUMERIC(12,2),
+  currency TEXT CHECK (currency IN ('TZS','USD')),
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','in_progress','completed','cancelled')),
   details JSONB NOT NULL DEFAULT '{}'::jsonb,
   source TEXT NOT NULL DEFAULT 'website_chatbot',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS requests_type_idx ON requests(type);
+CREATE INDEX IF NOT EXISTS requests_status_idx ON requests(status);
 
 CREATE TABLE IF NOT EXISTS notification_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

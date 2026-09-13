@@ -2,6 +2,7 @@ const LANG_RE = /^LANG:\s*(en|sw|fr|de)\s*\n+/i;
 const HANDOFF_RE = /\n?HANDOFF_READY:\s*(.+?)\s*(?:\n|$)/i;
 const SUGGESTIONS_RE = /\n?SUGGESTIONS:\s*(.+?)\s*(?:\n|$)/i;
 const BOOKING_RE = /\n?BOOKING_DATA:\s*(.+?)\s*(?:\n|$)/i;
+const SERVICE_RE = /\n?SERVICE_REQUEST_DATA:\s*(.+?)\s*(?:\n|$)/i;
 
 /**
  * Splits the model's raw completion into what the guest should actually see
@@ -28,7 +29,14 @@ function parseModelOutput(rawText) {
   }
 
   let bookingData = null;
+  let serviceRequestData = null;
   const bookingMatch = text.match(BOOKING_RE);
+  const serviceMatch = text.match(SERVICE_RE);
+  if (serviceMatch) {
+    try { serviceRequestData = JSON.parse(serviceMatch[1].trim()); } catch (_) { serviceRequestData = null; }
+    text = text.replace(SERVICE_RE, '\n');
+  }
+
   if (bookingMatch) {
     try { bookingData = JSON.parse(bookingMatch[1].trim()); } catch { bookingData = null; }
     text = text.replace(BOOKING_RE, '\n');
@@ -47,7 +55,7 @@ function parseModelOutput(rawText) {
 
   text = text.trim();
 
-  return { text, lang, handoffSummary, suggestions, bookingData };
+  return { text, lang, handoffSummary, suggestions, bookingData, serviceRequestData };
 }
 
 module.exports = { parseModelOutput };

@@ -326,7 +326,7 @@
     
     
     <div class="booking-card mt-4">
-        <form method="POST" action="#" id="bookingForm" novalidate="">
+        <form method="POST" action="https://bukobahotel.elctnwd.or.tz/book" id="bookingForm" novalidate="">
             <input type="hidden" name="_token" value="yqHaRILIFlnslx3rB5My9ZFkOGBUf8e5NyOKSko5" autocomplete="off">
             
             <div class="booking-card-body">
@@ -916,15 +916,14 @@
                         <label class="form-label" for="location_id">Location <span class="text-danger">*</span></label>
                         <select id="location_id" name="location_id" class="form-select " required="">
                             <option value="">— Select location —</option>
-                                                            <option value="">— Select location —</option>
-                                                            <option value="annex" disabled>
-                                    Annex (coming soon)
+                                                            <option value="2">
+                                    Annex
                                 </option>
-                                                            <option value="bukoba_main">
+                                                            <option value="1">
                                     Bukoba Hotel Main
                                 </option>
-                                                            <option value="chato" disabled>
-                                    Chato (coming soon)
+                                                            <option value="3">
+                                    Chato
                                 </option>
                                                     </select>
                                             </div>
@@ -934,7 +933,6 @@
                             <option value="">— Select location first —</option>
                         </select>
                                                 <div id="roomTypeInfo" class="mt-1 text-muted small" style="min-height:18px;"></div>
-                        <div id="availabilityInfo" class="mt-1 small" style="min-height:18px;"></div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="check_in_date">Check-in Date <span class="text-danger">*</span></label>
@@ -1051,8 +1049,6 @@
                 </div>
 
                 
-                <div id="bookingResult" class="alert mt-4" style="display:none;" role="alert"></div>
-
                 <div class="mt-4">
                     <button type="submit" class="btn btn-book" id="submitBtn">
                         <i class="bi bi-calendar-check me-2"></i>Submit Booking Request
@@ -1082,31 +1078,25 @@
 (function () {
     'use strict';
 
-    // Live booking API on Render. Keep this URL in one place so it is easy to change later.
-    const API_BASE = 'https://elct-bukoba-hotel-with-ai-chatbot.onrender.com';
-    const MAIN_PROPERTY_ID = 'bukoba_main';
-
-    const form            = document.getElementById('bookingForm');
-    const locationSel     = document.getElementById('location_id');
-    const roomTypeSel     = document.getElementById('room_type_id');
-    const roomTypeInfo    = document.getElementById('roomTypeInfo');
-    const availabilityInfo= document.getElementById('availabilityInfo');
-    const checkInEl       = document.getElementById('check_in_date');
-    const checkOutEl      = document.getElementById('check_out_date');
-    const adultsEl        = document.getElementById('adults');
-    const childrenEl      = document.getElementById('children');
+    const csrfToken     = document.querySelector('meta[name="csrf-token"]').content;
+    const locationSel   = document.getElementById('location_id');
+    const roomTypeSel   = document.getElementById('room_type_id');
+    const roomTypeInfo  = document.getElementById('roomTypeInfo');
+    const checkInEl     = document.getElementById('check_in_date');
+    const checkOutEl    = document.getElementById('check_out_date');
+    const adultsEl      = document.getElementById('adults');
+    const childrenEl    = document.getElementById('children');
     const residencyInput  = document.getElementById('residency_type');
     const residencyBadge  = document.getElementById('residencyBadge');
-    const pickupCheck     = document.getElementById('airport_pickup_required');
-    const pickupDetails   = document.getElementById('pickupDetails');
+    const pickupCheck   = document.getElementById('airport_pickup_required');
+    const pickupDetails = document.getElementById('pickupDetails');
     const pickupPriceInfo = document.getElementById('pickupPriceInfo');
     const pricingSummary  = document.getElementById('pricingSummary');
-    const submitBtn       = document.getElementById('submitBtn');
-    const bookingResult   = document.getElementById('bookingResult');
 
-    let currentAvailability = [];
-    let selectedRoom = null;
+    let currentRoomTypes   = [];
+    let currentPickupSetting = null;
 
+    // ── Utility ──────────────────────────────────────────────
     function fmt(amount, currency) {
         if (currency === 'USD') {
             return '$ ' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1116,14 +1106,10 @@
 
     function getNights() {
         if (!checkInEl.value || !checkOutEl.value) return 0;
-        const d1 = new Date(checkInEl.value + 'T00:00:00Z');
-        const d2 = new Date(checkOutEl.value + 'T00:00:00Z');
-        const diff = Math.round((d2 - d1) / 86400000);
+        const d1 = new Date(checkInEl.value);
+        const d2 = new Date(checkOutEl.value);
+        const diff = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
         return diff > 0 ? diff : 0;
-    }
-
-    function getGuestsCount() {
-        return (parseInt(adultsEl.value, 10) || 0) + (parseInt(childrenEl.value, 10) || 0);
     }
 
     function getResidency() {
@@ -1145,354 +1131,229 @@
         }
     }
 
-    function showAvailabilityMessage(text, type) {
-        if (!availabilityInfo) return;
-        availabilityInfo.className = 'mt-1 small';
-        if (type === 'success') availabilityInfo.classList.add('text-success');
-        else if (type === 'danger') availabilityInfo.classList.add('text-danger');
-        else availabilityInfo.classList.add('text-muted');
-        availabilityInfo.textContent = text || '';
-    }
-
-    function setSubmitState() {
-        submitBtn.disabled = !(locationSel.value && roomTypeSel.value && checkInEl.value && checkOutEl.value && getNights() > 0 && selectedRoom && Number(selectedRoom.available_units) > 0);
-    }
-
-    function buildAvailabilityUrl() {
-        const params = new URLSearchParams({
-            property_id: locationSel.value,
-            check_in: checkInEl.value,
-            check_out: checkOutEl.value,
-            guests: String(getGuestsCount())
-        });
-        return API_BASE + '/api/bookings/availability?' + params.toString();
-    }
-
-    async function loadAvailability(preferredRoomName) {
-        currentAvailability = [];
-        selectedRoom = null;
-        roomTypeSel.disabled = true;
-        roomTypeSel.innerHTML = '<option value="">Loading live availability...</option>';
+    // ── Load room types via AJAX ──────────────────────────────
+    function loadRoomTypes(locationId) {
+        roomTypeSel.disabled   = true;
+        roomTypeSel.innerHTML  = '<option value="">Loading...</option>';
         roomTypeInfo.textContent = '';
-        showAvailabilityMessage('', 'muted');
-        pricingSummary.style.display = 'none';
-        setSubmitState();
+        currentRoomTypes = [];
+        currentPickupSetting = null;
 
-        if (!locationSel.value || !checkInEl.value || !checkOutEl.value || getNights() <= 0) {
-            roomTypeSel.innerHTML = '<option value="">— Select dates first —</option>';
-            showAvailabilityMessage('Choose valid check-in and check-out dates to see live rooms.', 'muted');
-            setSubmitState();
-            return;
-        }
+        fetch('/book/room-types?location_id=' + encodeURIComponent(locationId), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            currentRoomTypes     = data.room_types || [];
+            currentPickupSetting = data.pickup_setting || null;
 
-        if (getGuestsCount() < 1) {
-            roomTypeSel.innerHTML = '<option value="">— Select guests —</option>';
-            setSubmitState();
-            return;
-        }
+            roomTypeSel.innerHTML = '<option value="">— Select room type —</option>';
 
-        try {
-            const response = await fetch(buildAvailabilityUrl(), { cache: 'no-store' });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Unable to check room availability.');
-
-            currentAvailability = data.availability || [];
-            roomTypeSel.innerHTML = '<option value="">— Select available room —</option>';
-
-            if (!currentAvailability.length) {
-                roomTypeSel.innerHTML = '<option value="">No rooms available for these dates</option>';
-                showAvailabilityMessage('No room type currently matches the selected dates and number of guests.', 'danger');
-                setSubmitState();
-                return;
+            if (currentRoomTypes.length === 0) {
+                roomTypeSel.innerHTML = '<option value="">No room types available</option>';
+                roomTypeSel.disabled = true;
+            } else {
+                currentRoomTypes.forEach(rt => {
+                    const opt = document.createElement('option');
+                    opt.value = rt.id;
+                    opt.textContent = rt.name + ' (Adults: ' + rt.capacity_adults + ', Children: ' + rt.capacity_children + ')';
+                    opt.dataset.roomType = JSON.stringify(rt);
+                    roomTypeSel.appendChild(opt);
+                });
+                roomTypeSel.disabled = false;
             }
 
-            currentAvailability.forEach(room => {
-                const option = document.createElement('option');
-                option.value = room.name;
-                option.textContent = room.name + ' — ' + Number(room.available_units) + ' available';
-                option.dataset.room = JSON.stringify(room);
-                roomTypeSel.appendChild(option);
-            });
-
-            roomTypeSel.disabled = false;
-            showAvailabilityMessage('Live availability checked from the hotel booking database.', 'success');
-
-            if (preferredRoomName) {
-                const match = currentAvailability.find(r => r.name === preferredRoomName);
-                if (match) roomTypeSel.value = match.name;
+            // Restore old selection if any
+            const oldRoomTypeId = '';
+            if (oldRoomTypeId) {
+                roomTypeSel.value = oldRoomTypeId;
             }
 
-            updateSelectedRoom();
-        } catch (error) {
-            console.error(error);
-            roomTypeSel.innerHTML = '<option value="">Unable to load availability</option>';
-            showAvailabilityMessage(error.message || 'Unable to connect to the booking server.', 'danger');
-            setSubmitState();
-        }
+            updatePickupInfo();
+            updatePricing();
+        })
+        .catch(() => {
+            roomTypeSel.innerHTML = '<option value="">Error loading room types</option>';
+            roomTypeSel.disabled = true;
+        });
     }
 
-    function updateSelectedRoom() {
-        const option = roomTypeSel.options[roomTypeSel.selectedIndex];
-        selectedRoom = option && option.dataset.room ? JSON.parse(option.dataset.room) : null;
-
-        if (!selectedRoom) {
-            roomTypeInfo.textContent = '';
-            pricingSummary.style.display = 'none';
-            setSubmitState();
-            return;
-        }
-
-        roomTypeInfo.textContent = 'Capacity: up to ' + selectedRoom.capacity_guests + ' guests. ' + Number(selectedRoom.available_units) + ' room(s) currently available.';
-
-        if (Number(selectedRoom.available_units) > 0) {
-            showAvailabilityMessage(Number(selectedRoom.available_units) + ' room(s) available for your selected dates.', 'success');
+    // ── Update pickup info display ────────────────────────────
+    function updatePickupInfo() {
+        if (currentPickupSetting && currentPickupSetting.is_active) {
+            let msg = 'Pickup: ' + fmt(currentPickupSetting.price_per_person, currentPickupSetting.currency) + ' per person';
+            if (!currentPickupSetting.charge_children) msg += ' (adults only)';
+            pickupPriceInfo.textContent = msg;
+            pickupPriceInfo.style.display = 'block';
         } else {
-            showAvailabilityMessage('This room type is fully booked for your selected dates.', 'danger');
+            pickupPriceInfo.textContent = 'Airport pickup is not available for this location.';
+            pickupPriceInfo.style.display = 'block';
+            pickupCheck.checked = false;
+            pickupCheck.disabled = !currentPickupSetting || !currentPickupSetting.is_active;
+            pickupDetails.style.display = 'none';
         }
-
-        updatePricing();
-        setSubmitState();
     }
 
+    // ── Update room type description ──────────────────────────
+    function updateRoomTypeInfo() {
+        const selectedOpt = roomTypeSel.options[roomTypeSel.selectedIndex];
+        if (!selectedOpt || !selectedOpt.dataset.roomType) {
+            roomTypeInfo.textContent = '';
+            return;
+        }
+        const rt = JSON.parse(selectedOpt.dataset.roomType);
+        if (rt.description) {
+            roomTypeInfo.textContent = rt.description;
+        }
+    }
+
+    // ── Calculate & render pricing ────────────────────────────
     function updatePricing() {
-        const nights = getNights();
-        if (!selectedRoom || nights <= 0) {
+        const nights    = getNights();
+        const residency = getResidency();
+        const adults    = parseInt(adultsEl.value) || 1;
+        const children  = parseInt(childrenEl.value) || 0;
+
+        const selectedOpt = roomTypeSel.options[roomTypeSel.selectedIndex];
+        if (!selectedOpt || !selectedOpt.dataset.roomType || nights === 0) {
             pricingSummary.style.display = 'none';
             return;
         }
 
-        const residency = getResidency();
-        const currency = residency === 'foreigner' ? 'USD' : 'TZS';
-        const basePrice = residency === 'foreigner'
-            ? Number(selectedRoom.price_foreigner_usd)
-            : Number(selectedRoom.price_resident_tzs);
+        const rt = JSON.parse(selectedOpt.dataset.roomType);
+        const rates = rt.room_rates || [];
+        if (rates.length === 0) {
+            pricingSummary.style.display = 'none';
+            return;
+        }
+        const rate = rates[0];
 
-        const roomTotal = basePrice * nights;
+        let currency, basePrice;
+        if (residency === 'resident') {
+            currency  = 'TZS';
+            basePrice = parseFloat(rate.resident_price_tzs);
+        } else if (rate.foreigner_price_usd) {
+            currency  = 'USD';
+            basePrice = parseFloat(rate.foreigner_price_usd);
+        } else {
+            currency  = 'TZS';
+            basePrice = parseFloat(rate.foreigner_price);
+        }
 
-        // Airport pickup is recorded as a request only. The current booking API does not
-        // yet add pickup charges to the booking total, so we never display a misleading fee.
-        document.getElementById('priceRoomLabel').textContent = 'Room (' + nights + ' night' + (nights !== 1 ? 's' : '') + ' @ ' + fmt(basePrice, currency) + ')';
-        document.getElementById('priceRoomValue').textContent = fmt(roomTotal, currency);
-        document.getElementById('priceVatLabel').textContent = 'VAT / taxes';
-        document.getElementById('priceVatValue').textContent = 'Included / confirmed by hotel';
+        // Quoted room rates are VAT-inclusive: the price shown/charged per night
+        // already contains VAT, so it is split back out for display, not added
+        // on top. This must mirror the backend calculation exactly (see
+        // PublicBookingController::store) so the estimate matches what's booked.
+        const roomTotal  = basePrice * nights;
+        const vatPct     = parseFloat(rate.vat_percentage) || 0;
+        const baseAmount = vatPct > 0 ? roomTotal / (1 + vatPct / 100) : roomTotal;
+        const vatAmount  = roomTotal - baseAmount;
+
+        let pickupTotal = 0;
+        const showPickup = pickupCheck.checked && currentPickupSetting && currentPickupSetting.is_active;
+        if (showPickup) {
+            let persons = adults;
+            if (currentPickupSetting.charge_children) persons += children;
+            pickupTotal = parseFloat(currentPickupSetting.price_per_person) * persons;
+        }
+
+        const grandTotal = roomTotal + pickupTotal;
+
+        // Update DOM
+        document.getElementById('priceRoomLabel').textContent = 'Base Amount (' + nights + ' night' + (nights !== 1 ? 's' : '') + ' @ ' + fmt(basePrice, currency) + ')';
+        document.getElementById('priceRoomValue').textContent = fmt(baseAmount, currency);
+        document.getElementById('priceVatLabel').textContent  = 'VAT (' + vatPct + '% incl. in price)';
+        document.getElementById('priceVatValue').textContent  = fmt(vatAmount, currency);
 
         const pickupRow = document.getElementById('pricePickupRow');
-        if (pickupRow) pickupRow.style.display = 'none';
+        if (showPickup) {
+            document.getElementById('pricePickupValue').textContent = fmt(pickupTotal, currency);
+            pickupRow.style.display = '';
+        } else {
+            pickupRow.style.display = 'none';
+        }
 
-        document.getElementById('priceTotalValue').textContent = fmt(roomTotal, currency);
+        document.getElementById('priceTotalValue').textContent = fmt(grandTotal, currency);
         pricingSummary.style.display = '';
     }
 
-    function setDateMinimums() {
-        const now = new Date();
-        const today = now.toISOString().split('T')[0];
-        const tomorrowDate = new Date(now.getTime() + 86400000);
-        const tomorrow = tomorrowDate.toISOString().split('T')[0];
-        checkInEl.min = today;
-        checkOutEl.min = tomorrow;
-    }
-
-    function refreshRooms() {
-        const preferred = roomTypeSel.value;
-        if (locationSel.value === 'bukoba_main') {
-            loadAvailability(preferred);
+    // ── Event listeners ───────────────────────────────────────
+    locationSel.addEventListener('change', function () {
+        if (this.value) {
+            loadRoomTypes(this.value);
         } else {
             roomTypeSel.disabled = true;
-            roomTypeSel.innerHTML = '<option value="">Select a supported hotel location</option>';
-            selectedRoom = null;
+            roomTypeSel.innerHTML = '<option value="">— Select location first —</option>';
             pricingSummary.style.display = 'none';
-            showAvailabilityMessage('Live room inventory is currently enabled for Bukoba Hotel Main.', 'muted');
-            setSubmitState();
         }
-    }
-
-    locationSel.addEventListener('change', refreshRooms);
-
-    roomTypeSel.addEventListener('change', updateSelectedRoom);
-
-    [checkInEl, checkOutEl, adultsEl, childrenEl].forEach(el => {
-        el.addEventListener('change', function () {
-            if (checkInEl.value && checkOutEl.value && checkOutEl.value <= checkInEl.value) {
-                const d = new Date(checkInEl.value + 'T00:00:00Z');
-                d.setUTCDate(d.getUTCDate() + 1);
-                checkOutEl.value = d.toISOString().split('T')[0];
-            }
-            refreshRooms();
-        });
     });
 
-    pickupCheck.addEventListener('change', function () {
-        pickupDetails.style.display = this.checked ? '' : 'none';
-        pickupPriceInfo.textContent = this.checked
-            ? 'Airport pickup will be sent to the hotel as a special request. The hotel will confirm the pickup price separately.'
-            : '';
+    roomTypeSel.addEventListener('change', function () {
+        updateRoomTypeInfo();
         updatePricing();
     });
 
-    form.addEventListener('submit', async function (event) {
-        event.preventDefault();
-        bookingResult.style.display = 'none';
-
-        if (!selectedRoom || Number(selectedRoom.available_units) < 1) {
-            bookingResult.className = 'alert alert-danger mt-4';
-            bookingResult.textContent = 'Please select a room that is currently available.';
-            bookingResult.style.display = '';
-            return;
-        }
-
-        const fullName = document.getElementById('full_name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const countryCode = document.getElementById('pub_book_code').value;
-        const phoneNumber = document.getElementById('pub_book_num').value.trim();
-        const phone = countryCode + phoneNumber.replace(/^0+/, '');
-        const nationality = document.getElementById('pub_book_nat').value;
-        const specialRequest = document.getElementById('special_request').value.trim();
-        const pickupRequested = pickupCheck.checked;
-        const arrival = document.getElementById('arrival_datetime')?.value || '';
-        const pickupNotes = document.getElementById('pickup_notes')?.value.trim() || '';
-
-        if (!fullName || !phoneNumber || !nationality) {
-            bookingResult.className = 'alert alert-danger mt-4';
-            bookingResult.textContent = 'Please complete your name, WhatsApp-capable phone number and nationality.';
-            bookingResult.style.display = '';
-            return;
-        }
-
-        let combinedRequest = specialRequest;
-        if (pickupRequested) {
-            const pickupText = 'Airport pickup requested.' + (arrival ? ' Arrival: ' + arrival + '.' : '') + (pickupNotes ? ' Notes: ' + pickupNotes : '');
-            combinedRequest = combinedRequest ? combinedRequest + ' ' + pickupText : pickupText;
-        }
-
-        const payload = {
-            propertyId: locationSel.value,
-            roomType: selectedRoom.name,
-            checkIn: checkInEl.value,
-            checkOut: checkOutEl.value,
-            guestsCount: getGuestsCount(),
-            guestName: fullName,
-            phone: phone,
-            email: email || null,
-            currency: getResidency() === 'foreigner' ? 'USD' : 'TZS',
-            specialRequests: combinedRequest || null
-        };
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Confirming booking...';
-
-        try {
-            const response = await fetch(API_BASE + '/api/bookings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Booking could not be completed.');
-
-            const booking = data.booking;
-            const notification = data.notification || {};
-
-            const cleanTicket = [
-                'ELCT BUKOBA HOTEL & TOURS',
-                'BOOKING CONFIRMED ',
-                '',
-                'Booking: ' + booking.booking_reference,
-                'Guest: ' + (booking.guest_name || fullName),
-                'Room: ' + booking.room_type,
-                '',
-                'Check-in: ' + formatBookingDate(booking.check_in),
-                'Check-out: ' + formatBookingDate(booking.check_out),
-                'Guests: ' + booking.guests_count,
-                'Total: ' + booking.currency + ' ' + Number(booking.total_amount).toLocaleString('en-US'),
-                '',
-                'Please keep this booking reference and present it when you arrive.',
-                'Karibu sana — we look forward to welcoming you!'
-            ].join('\n');
-
-            bookingResult.className = 'alert alert-success mt-4';
-            bookingResult.innerHTML = '<h5 class="alert-heading mb-2"> Booking confirmed</h5>' +
-                '<p class="mb-2"><strong>Booking reference:</strong> ' + escapeHtml(booking.booking_reference) + '</p>' +
-                '<p class="mb-2"><strong>Room:</strong> ' + escapeHtml(booking.room_type) + '<br>' +
-                '<strong>Check-in:</strong> ' + escapeHtml(formatBookingDate(booking.check_in)) + '<br>' +
-                '<strong>Check-out:</strong> ' + escapeHtml(formatBookingDate(booking.check_out)) + '<br>' +
-                '<strong>Guests:</strong> ' + escapeHtml(booking.guests_count) + '<br>' +
-                '<strong>Total:</strong> ' + escapeHtml(booking.currency) + ' ' + Number(booking.total_amount).toLocaleString('en-US') + '</p>' +
-                '<pre class="bg-white p-3 rounded border small mb-2" style="white-space:pre-wrap;">' + escapeHtml(cleanTicket) + '</pre>' +
-                (notification.sent
-                    ? '<p class="mb-0 text-success"><strong>WhatsApp confirmation sent.</strong> Please keep the message for your arrival.</p>'
-                    : '<p class="mb-0"><strong>Booking saved successfully.</strong> WhatsApp automatic delivery is not active yet, so please keep the booking reference above.</p>');
-            bookingResult.style.display = '';
-
-            form.reset();
-            residencyInput.value = 'resident';
-            updateResidencyBadge('resident');
-            roomTypeSel.innerHTML = '<option value="">— Select location first —</option>';
-            roomTypeSel.disabled = true;
-            selectedRoom = null;
-            pricingSummary.style.display = 'none';
-            pickupDetails.style.display = 'none';
-            setDateMinimums();
-            window.scrollTo({ top: bookingResult.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
-        } catch (error) {
-            console.error(error);
-            bookingResult.className = 'alert alert-danger mt-4';
-            bookingResult.innerHTML = '<strong>Booking not completed.</strong><br>' + escapeHtml(error.message || 'Please try again.');
-            bookingResult.style.display = '';
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-calendar-check me-2"></i>Submit Booking Request';
-            setSubmitState();
-        }
-    });
-
-    function formatBookingDate(value) {
-        if (!value) return 'To be confirmed';
-        const raw = String(value);
-        const datePart = raw.slice(0, 10);
-        const date = new Date(datePart + 'T00:00:00Z');
-        if (Number.isNaN(date.getTime())) return raw;
-        return new Intl.DateTimeFormat('en-GB', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            timeZone: 'UTC'
-        }).format(date);
-    }
-
-    function escapeHtml(value) {
-        return String(value ?? '').replace(/[&<>'"]/g, function (char) {
-            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char];
-        });
-    }
-
-    // Nationality → residency + country code.
-    const natSel = document.getElementById('pub_book_nat');
-    const codeSel = document.getElementById('pub_book_code');
-    if (natSel) {
-        function onNationalityChange() {
-            const residency = resolveResidencyFromNationality(natSel.value);
-            updateResidencyBadge(residency);
-            updatePricing();
-            if (codeSel) {
-                const code = natSel.options[natSel.selectedIndex]?.getAttribute('data-code');
-                if (code) {
-                    for (let i = 0; i < codeSel.options.length; i++) {
-                        if (codeSel.options[i].value === code) {
-                            codeSel.selectedIndex = i;
-                            break;
-                        }
-                    }
+    [checkInEl, checkOutEl].forEach(el => {
+        el.addEventListener('change', function () {
+            // Ensure checkout > checkin
+            if (checkInEl.value && checkOutEl.value) {
+                if (checkOutEl.value <= checkInEl.value) {
+                    const d = new Date(checkInEl.value);
+                    d.setDate(d.getDate() + 1);
+                    checkOutEl.value = d.toISOString().split('T')[0];
                 }
             }
-        }
-        natSel.addEventListener('change', onNationalityChange);
-        onNationalityChange();
+            updatePricing();
+        });
+    });
+
+    adultsEl.addEventListener('change', updatePricing);
+    childrenEl.addEventListener('change', updatePricing);
+
+    pickupCheck.addEventListener('change', function () {
+        pickupDetails.style.display = this.checked ? '' : 'none';
+        updatePricing();
+    });
+
+    // ── On page load: restore state if old values present ────
+    if (locationSel.value) {
+        loadRoomTypes(locationSel.value);
     }
 
-    setDateMinimums();
-    setSubmitState();
+    // Set min dates
+    const today    = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+    checkInEl.min  = today;
+    checkOutEl.min = tomorrow;
+
+})();
+
+// Nationality → auto-detect residency + auto-link country code
+(function () {
+    var natSel  = document.getElementById('pub_book_nat');
+    var codeSel = document.getElementById('pub_book_code');
+    if (!natSel) return;
+
+    function onNationalityChange() {
+        // Update residency
+        if (typeof updateResidencyBadge === 'function' && typeof resolveResidencyFromNationality === 'function') {
+            var residency = resolveResidencyFromNationality(natSel.value);
+            updateResidencyBadge(residency);
+            if (typeof updatePricing === 'function') updatePricing();
+        }
+        // Auto-link phone code
+        if (codeSel) {
+            var code = natSel.options[natSel.selectedIndex].getAttribute('data-code');
+            if (!code) return;
+            for (var i = 0; i < codeSel.options.length; i++) {
+                if (codeSel.options[i].value === code) { codeSel.selectedIndex = i; break; }
+            }
+        }
+    }
+
+    natSel.addEventListener('change', onNationalityChange);
+    // Trigger on load to set initial state
+    if (natSel.value) onNationalityChange();
 })();
 </script>
 

@@ -4,8 +4,8 @@ const { buildSystemPrompt } = require('../systemPrompt');
 const { preCheck, postCheck, detectLang } = require('../guardrails');
 const { chatCompletion } = require('../groqClient');
 const { parseModelOutput } = require('../responseParser');
-const { createBooking } = require('../bookingService');
-const { bookingTicketText, sendWhatsAppText } = require('../whatsapp');
+const { createBooking, createServiceRequest } = require('../bookingService');
+const { bookingTicketText } = require('../whatsapp');
 const { query: dbQuery } = require('../db');
 const { buildHandoffLink } = require('../whatsapp');
 
@@ -46,7 +46,7 @@ router.post('/chat', async (req, res) => {
 
   try {
     const safeHistory = Array.isArray(history) ? history : [];
-    const looksLikeBooking = /\b(book|booking|reserve|reservation|room|stay|check[- ]?in|check[- ]?out|availability)\b/i.test(
+    const looksLikeBooking = /\b(book|booking|reserve|reservation|room|stay|check[- ]?in|check[- ]?out|availability|car hire|rent a car|conference|hall|tour|safari|laundry|airport pickup|service request)\b/i.test(
       `${safeHistory.map((m) => m && m.text ? m.text : '').join(' ')} ${message}`
     );
     const completion = await chatCompletion({
@@ -100,23 +100,7 @@ router.post('/chat', async (req, res) => {
             status: booking.status,
             ticket,
           };
-          response.reply = `${response.reply}\n\nBooking confirmed: **${booking.booking_reference}**. A confirmation ticket is being sent to your WhatsApp.`;
-
-          try {
-            const notification = await sendWhatsAppText(booking.guest.phone, ticket);
-            response.whatsapp_notification = notification;
-            await dbQuery(
-              `INSERT INTO notification_log (booking_id, channel, recipient, notification_type, status, provider_message_id, error) VALUES ($1,'whatsapp',$2,'booking_confirmation',$3,$4,$5)`,
-              [booking.id, booking.guest.phone, 'booking_confirmation', notification.sent ? 'sent' : 'not_configured', notification.providerMessageId || null, notification.reason || null]
-            );
-          } catch (notifyErr) {
-            console.error('[chat][whatsapp] confirmation failed:', notifyErr.message);
-            response.whatsapp_notification = { sent: false, reason: 'DELIVERY_FAILED' };
-            await dbQuery(
-              `INSERT INTO notification_log (booking_id, channel, recipient, notification_type, status, error) VALUES ($1,'whatsapp',$2,'booking_confirmation','failed',$3)`,
-              [booking.id, booking.guest.phone, notifyErr.message]
-            );
-          }
+          response.reply = `${response.reply}\n\nBooking confirmed: **${booking.booking_reference}**.`;
         } catch (bookingErr) {
           const messages = {
             NO_AVAILABILITY: 'I’m sorry, that room is no longer available for those dates. Let me check another room option with you.',
@@ -129,6 +113,27 @@ router.post('/chat', async (req, res) => {
       }
     }
 
+
+    if (checked.safe && parsed.serviceRequestData && process.env.DATABASE_URL) {
+      const r = parsed.serviceRequestData;
+      const required = ['type', 'guestName', 'phone'];
+      const complete = required.every((key) => r[key] !== null && r[key] !== undefined && r[key] !== '');
+      if (complete) {
+        try {
+          const request = await createServiceRequest(r);
+          response.service_request = {
+            reference: request.reference,
+            type: request.type,
+            status: request.status,
+          };
+          const labels = { car_hire: 'car hire', conference: 'conference hall', tour: 'tour', extra_service: 'extra service' };
+          response.reply = `${response.reply}\n\nYour ${labels[request.type] || 'service'} request has been received. Reference: **${request.reference}**. The hotel will review the details and provide any required quote or confirmation.`;
+        } catch (requestErr) {
+          response.service_request_error = requestErr.message;
+          response.reply = 'I have the details, but I could not submit the service request yet. Please check the information and try again.';
+        }
+      }
+    }
     return res.json(response);
   } catch (err) {
     console.error('[chat] Groq call failed:', err.message);

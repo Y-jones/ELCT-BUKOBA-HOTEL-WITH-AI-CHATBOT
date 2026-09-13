@@ -162,6 +162,27 @@ async function callWithRetry(
       choice.message &&
       choice.message.content;
 
+    // TEMPORARY DEBUGGING LOGS
+    console.log(
+      '[groq] MODEL:',
+      MODEL
+    );
+
+    console.log(
+      '[groq] RAW COMPLETION:',
+      JSON.stringify(text)
+    );
+
+    console.log(
+      '[groq] FINISH REASON:',
+      choice && choice.finish_reason
+    );
+
+    console.log(
+      '[groq] USAGE:',
+      completion.usage || null
+    );
+
     if (!text) {
       throw new Error(
         'Empty completion from Groq'

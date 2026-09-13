@@ -1,18 +1,4 @@
-const crypto = require('crypto');
 const { query, withTransaction } = require('./db');
-
-// Postgres error code for a unique-constraint violation.
-const UNIQUE_VIOLATION = '23505';
-
-// 8 random hex characters gives ~4.3 billion combinations per year (vs. the
-// previous 6-digit decimal suffix, which only had 900,000 and was brute-forceable
-// against the public GET /api/bookings/:reference lookup). Also makes an
-// accidental reference collision between two guests effectively impossible,
-// though createBooking() still retries on one just in case.
-function generateBookingReference() {
-  const suffix = crypto.randomBytes(4).toString('hex').toUpperCase();
-  return `ELCT-${new Date().getUTCFullYear()}-${suffix}`;
-}
 
 function normalizePhone(phone) {
   return String(phone || '').replace(/[^\d+]/g, '').replace(/^00/, '+');
@@ -90,36 +76,6 @@ async function createBooking(input) {
   if (nightsBetween(checkIn, checkOut) <= 0) throw new Error('Check-out must be after check-in');
   if (guestsCount < 1) throw new Error('Guest count must be at least 1');
 
-  // A reference collision aborts the whole transaction (Postgres marks it
-  // failed as soon as one statement errors), so the retry has to happen at
-  // this level, re-running the transaction with a fresh reference — not by
-  // catching the error inside it and trying the INSERT again.
-  const MAX_REFERENCE_ATTEMPTS = 5;
-  let lastErr;
-  for (let attempt = 0; attempt < MAX_REFERENCE_ATTEMPTS; attempt++) {
-    try {
-      return await attemptCreateBooking({
-        propertyId,
-        roomType,
-        checkIn,
-        checkOut,
-        guestsCount,
-        phone,
-        input,
-      });
-    } catch (err) {
-      const isReferenceCollision =
-        err.code === UNIQUE_VIOLATION &&
-        (err.constraint === 'bookings_booking_reference_key' || /booking_reference/i.test(err.detail || ''));
-      if (!isReferenceCollision) throw err;
-      lastErr = err;
-      // otherwise: loop again with a newly generated reference
-    }
-  }
-  throw lastErr;
-}
-
-async function attemptCreateBooking({ propertyId, roomType, checkIn, checkOut, guestsCount, phone, input }) {
   return withTransaction(async (client) => {
     // Do not use FOR UPDATE on a LEFT JOIN: PostgreSQL rejects locking the nullable side.
     // First locate the room type, then lock that room_types row separately.
@@ -164,7 +120,7 @@ async function attemptCreateBooking({ propertyId, roomType, checkIn, checkOut, g
     const nightlyRate = Number(isForeign ? room.price_foreigner_usd : room.price_resident_tzs);
     const currency = isForeign ? 'USD' : 'TZS';
     const total = nightlyRate * nights;
-    const reference = generateBookingReference();
+    const reference = `ELCT-${new Date().getUTCFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 
     const bookingResult = await client.query(
       `INSERT INTO bookings
@@ -192,4 +148,46 @@ async function getBooking(reference) {
   return result.rows[0] || null;
 }
 
-module.exports = { availability, createBooking, getBooking, findRoomType };
+
+function serviceTypeFromInput(type) {
+  const value = String(type || '').trim().toLowerCase();
+  const aliases = {
+    car: 'car_hire', 'car_hire': 'car_hire', 'car hire': 'car_hire',
+    conference: 'conference', 'conference_hall': 'conference', 'hall': 'conference',
+    tour: 'tour', 'tours': 'tour',
+    service: 'extra_service', 'extra_service': 'extra_service', 'extra services': 'extra_service',
+  };
+  return aliases[value] || value;
+}
+
+async function createServiceRequest(input) {
+  const type = serviceTypeFromInput(input.type);
+  const allowed = ['car_hire', 'conference', 'tour', 'extra_service'];
+  if (!allowed.includes(type)) throw new Error('INVALID_SERVICE_TYPE');
+  const guestName = String(input.guestName || '').trim();
+  const phone = normalizePhone(input.phone);
+  if (!guestName || !phone) throw new Error('Missing required guest information');
+
+  const propertyId = input.propertyId || null;
+  const details = input.details && typeof input.details === 'object' ? input.details : {};
+  const year = new Date().getUTCFullYear();
+  const prefix = type === 'car_hire' ? 'C' : type === 'conference' ? 'H' : type === 'tour' ? 'T' : 'S';
+  const reference = `ELCT-${prefix}-${year}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+  return withTransaction(async (client) => {
+    const guestResult = await client.query(
+      `INSERT INTO guests (name, phone, email, country) VALUES ($1,$2,$3,$4) RETURNING *`,
+      [guestName, phone, input.email || null, input.country || null]
+    );
+    const guest = guestResult.rows[0];
+    const requestResult = await client.query(
+      `INSERT INTO requests (guest_id, property_id, type, reference, quoted_amount, currency, status, details, source)
+       VALUES ($1,$2,$3,$4,$5,$6,'pending',$7,'website_chatbot') RETURNING *`,
+      [guest.id, propertyId, type, reference, input.quotedAmount != null ? Number(input.quotedAmount) : null,
+       input.currency ? String(input.currency).toUpperCase() : null, JSON.stringify(details)]
+    );
+    return { ...requestResult.rows[0], guest };
+  });
+}
+
+module.exports = { availability, createBooking, getBooking, findRoomType, createServiceRequest };
