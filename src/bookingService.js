@@ -1,4 +1,18 @@
+const crypto = require('crypto');
 const { query, withTransaction } = require('./db');
+
+// Postgres error code for a unique-constraint violation.
+const UNIQUE_VIOLATION = '23505';
+
+// 8 random hex characters gives ~4.3 billion combinations per year (vs. the
+// previous 6-digit decimal suffix, which only had 900,000 and was brute-forceable
+// against the public GET /api/bookings/:reference lookup). Also makes an
+// accidental reference collision between two guests effectively impossible,
+// though createBooking() still retries on one just in case.
+function generateBookingReference() {
+  const suffix = crypto.randomBytes(4).toString('hex').toUpperCase();
+  return `ELCT-${new Date().getUTCFullYear()}-${suffix}`;
+}
 
 function normalizePhone(phone) {
   return String(phone || '').replace(/[^\d+]/g, '').replace(/^00/, '+');
@@ -76,6 +90,36 @@ async function createBooking(input) {
   if (nightsBetween(checkIn, checkOut) <= 0) throw new Error('Check-out must be after check-in');
   if (guestsCount < 1) throw new Error('Guest count must be at least 1');
 
+  // A reference collision aborts the whole transaction (Postgres marks it
+  // failed as soon as one statement errors), so the retry has to happen at
+  // this level, re-running the transaction with a fresh reference — not by
+  // catching the error inside it and trying the INSERT again.
+  const MAX_REFERENCE_ATTEMPTS = 5;
+  let lastErr;
+  for (let attempt = 0; attempt < MAX_REFERENCE_ATTEMPTS; attempt++) {
+    try {
+      return await attemptCreateBooking({
+        propertyId,
+        roomType,
+        checkIn,
+        checkOut,
+        guestsCount,
+        phone,
+        input,
+      });
+    } catch (err) {
+      const isReferenceCollision =
+        err.code === UNIQUE_VIOLATION &&
+        (err.constraint === 'bookings_booking_reference_key' || /booking_reference/i.test(err.detail || ''));
+      if (!isReferenceCollision) throw err;
+      lastErr = err;
+      // otherwise: loop again with a newly generated reference
+    }
+  }
+  throw lastErr;
+}
+
+async function attemptCreateBooking({ propertyId, roomType, checkIn, checkOut, guestsCount, phone, input }) {
   return withTransaction(async (client) => {
     // Do not use FOR UPDATE on a LEFT JOIN: PostgreSQL rejects locking the nullable side.
     // First locate the room type, then lock that room_types row separately.
@@ -120,7 +164,7 @@ async function createBooking(input) {
     const nightlyRate = Number(isForeign ? room.price_foreigner_usd : room.price_resident_tzs);
     const currency = isForeign ? 'USD' : 'TZS';
     const total = nightlyRate * nights;
-    const reference = `ELCT-${new Date().getUTCFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+    const reference = generateBookingReference();
 
     const bookingResult = await client.query(
       `INSERT INTO bookings

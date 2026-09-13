@@ -6,6 +6,31 @@ const { KB } = require('../retrieval');
 
 const router = express.Router();
 
+// NOTE on scope: GET /availability and POST / below are called directly from
+// the browser by the public "Book a Room" page (see Book a Room.html) with
+// no credentials — that's the live public booking form, so those two stay
+// open. They're already covered by the global rate limiter in server.js.
+//
+// GET /:reference is different: it hands back a guest's full name, phone,
+// and email for anyone who supplies a matching reference, and nothing on the
+// public site actually calls it — so it has no legitimate anonymous caller.
+// Left open, it's a PII leak: booking_reference is only ELCT-<year>-<6
+// digits> (900,000 combos/year), so it can be brute-forced. Gate this one
+// route with a shared secret for internal/admin use instead.
+function requireApiKey(req, res, next) {
+  const expected = process.env.BOOKINGS_API_KEY;
+  if (!expected) {
+    // Fail closed: an unset key must never mean "open to everyone".
+    console.error('[bookings] BOOKINGS_API_KEY is not set — refusing requests to GET /api/bookings/:reference.');
+    return res.status(503).json({ error: 'Booking lookup is not configured' });
+  }
+  const provided = req.get('x-api-key');
+  if (!provided || provided !== expected) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  return next();
+}
+
 function dbReady(res) {
   if (!process.env.DATABASE_URL) {
     res.status(503).json({ error: 'Booking database is not configured' });
@@ -31,7 +56,7 @@ router.get('/availability', async (req, res) => {
   }
 });
 
-router.get('/:reference', async (req, res) => {
+router.get('/:reference', requireApiKey, async (req, res) => {
   if (!dbReady(res)) return;
   try {
     const booking = await getBooking(req.params.reference);

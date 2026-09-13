@@ -30,6 +30,14 @@ Required for automatic WhatsApp confirmations:
 - `WHATSAPP_PHONE_NUMBER_ID`
 - `WHATSAPP_API_VERSION` (default `v23.0`)
 
+Required for looking up an existing booking by reference:
+
+- `BOOKINGS_API_KEY` — a long random secret. Only `GET /api/bookings/:reference`
+  requires it (send it as an `x-api-key` header); it returns guest name/phone/
+  email, so it's for internal/admin use, not the public site. The public
+  booking form's own calls (`GET /availability`, `POST /`) are unaffected and
+  stay open, same as today.
+
 ## 3. Configure real room inventory
 
 The hotel website publishes room types and prices, but it does not provide the number of physical units per room type. The initializer therefore creates each room type with `total_units = 0` rather than inventing inventory.
@@ -51,9 +59,9 @@ Do this with the hotel's real inventory values.
 
 ## 4. Endpoints added
 
-- `GET /api/bookings/availability?property_id=bukoba_main&room_type=Double%20Room&check_in=2026-09-18&check_out=2026-09-21&guests=2`
-- `POST /api/bookings`
-- `GET /api/bookings/:reference`
+- `GET /api/bookings/availability?property_id=bukoba_main&room_type=Double%20Room&check_in=2026-09-18&check_out=2026-09-21&guests=2` (public, no key)
+- `POST /api/bookings` (public, no key)
+- `GET /api/bookings/:reference` (requires `x-api-key: <BOOKINGS_API_KEY>`)
 
 ## 5. Booking confirmation flow
 
