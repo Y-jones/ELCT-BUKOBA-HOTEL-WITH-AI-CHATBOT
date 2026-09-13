@@ -1,5 +1,5 @@
 const express = require('express');
-const { retrieveContext, KB } = require('../retrieval');
+const { retrieveContext, KB, DIRECTORY_TEXT } = require('../retrieval');
 const { buildSystemPrompt } = require('../systemPrompt');
 const { preCheck, postCheck, detectLang } = require('../guardrails');
 const { chatCompletion } = require('../groqClient');
@@ -19,7 +19,7 @@ const FALLBACK_MESSAGE = {
 };
 
 function buildContextText(chunks) {
-  return chunks.map((c) => `[${c.category}] ${c.text}`).join('\n\n');
+  return chunks.map((c) => c.text).join('\n\n');
 }
 
 router.post('/chat', async (req, res) => {
@@ -41,8 +41,11 @@ router.post('/chat', async (req, res) => {
   // 2. Retrieval — only the relevant slice of the knowledge base.
   // topK=3 (not more) keeps input tokens well within the free tier's
   // 6,000 tokens/minute cap alongside the compact system prompt above.
-  const chunks = retrieveContext(message, { topK: 3 });
-  const systemPrompt = buildSystemPrompt({ contextText: buildContextText(chunks) });
+  const chunks = retrieveContext(message, { topK: 4 });
+  const systemPrompt = buildSystemPrompt({
+    directoryText: DIRECTORY_TEXT,
+    contextText: buildContextText(chunks),
+  });
 
   try {
     const safeHistory = Array.isArray(history) ? history : [];

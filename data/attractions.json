@@ -1,0 +1,54 @@
+{
+  "_notes": "General-knowledge tourism layer, kept separate from the hotel's own confirmed facts in knowledge_base.json. Every record below is tagged 'confidence: general_tourism_info' to tell the model this is public destination knowledge (from regional tourism sources), not something the hotel itself publishes or operates — so it should be shared as helpful local-area context, never as a hotel-confirmed fact, and never used to book/quote anything the hotel doesn't run. Hotel-run tour products (Kyamunene Water Fall, Burigi/Chato/Serengeti National Parks) stay in knowledge_base.json's 'tour' section, since those the hotel actually confirms and sells.",
+  "attractions": [
+    {
+      "name": "Musira Island",
+      "category": "Nature / lake excursion",
+      "description": "A rocky island just offshore from Bukoba town, once used as a royal-era prison island. A path leads to the summit past an old Orthodox church; the far side has cliffs and caves.",
+      "directions_from_hotel": "The hotel sits about 200m from the Lake Victoria shore in Bukoba town. Boats to Musira leave from the Nyamukazi landing, a short distance along the shore near Kagera Museum — walkable or a very short taxi/boda ride from the hotel.",
+      "confidence": "general_tourism_info — boat fees/times change; the hotel's tour or car-hire desk can help arrange a boat"
+    },
+    {
+      "name": "Kagera Museum",
+      "category": "Culture & history",
+      "description": "A small regional museum with Haya and other local tribal artefacts, crafts, and wildlife photography from the Kagera region.",
+      "directions_from_hotel": "In the Nyamukazi area near Bukoba Airport, on the lakeshore side of town — a short drive or walk from the hotel.",
+      "confidence": "general_tourism_info — opening hours/entry fee not published by the hotel; confirm locally before visiting"
+    },
+    {
+      "name": "Bunena Church",
+      "category": "Culture & history",
+      "description": "Bukoba's original cathedral, built in 1914 — the oldest church in town, with a scenic lakeside setting.",
+      "directions_from_hotel": "On the Bukoba lakeshore, a short distance from the town centre and from the hotel.",
+      "confidence": "general_tourism_info"
+    },
+    {
+      "name": "Katuruka Heritage Site",
+      "category": "Culture & history",
+      "description": "Preserves one of the oldest known iron-smelting furnace sites in East, Central, and Southern Africa, dated to roughly 500 BC.",
+      "directions_from_hotel": "A short drive outside Bukoba town; a local guide or tour operator is recommended.",
+      "confidence": "general_tourism_info"
+    },
+    {
+      "name": "Mater Misericordiae Cathedral",
+      "category": "Culture & landmark",
+      "description": "A landmark cathedral in central Bukoba, known for its tall glass steeple.",
+      "directions_from_hotel": "Central Bukoba town, within easy reach of the hotel.",
+      "confidence": "general_tourism_info"
+    },
+    {
+      "name": "Rubondo Island National Park",
+      "category": "Wildlife / national park",
+      "description": "A Lake Victoria island national park protecting chimpanzees, sitatunga antelope, and other wildlife — a bigger excursion than the town-area sites above.",
+      "directions_from_hotel": "Further afield than the other attractions here; reached by boat or light aircraft, best planned as a multi-day trip arranged in advance.",
+      "confidence": "general_tourism_info — best discussed with the hotel's tour desk given the extra planning involved"
+    }
+  ],
+  "how_to_reach_bukoba": {
+    "by_air": "Bukoba Airport (BKZ) is roughly a 10-minute drive from the town centre and the hotel.",
+    "by_lake_ferry": "The MV Victoria ferry sails overnight between Bukoba and Mwanza about three times a week, taking around 12 hours — a scenic, low-cost route across Lake Victoria.",
+    "by_road": "Long-haul buses connect Bukoba to Mwanza, Dar es Salaam, and other Tanzanian cities; the main bus terminal is in central Bukoba, close to the hotel.",
+    "within_bukoba": "Bukoba town is compact and largely walkable; the hotel is on Pwani Street near the RAS Kagera office, about 200m from the Lake Victoria shore.",
+    "confidence": "general_tourism_info — exact schedules and fares change; the hotel's front desk or car-hire desk can help confirm current options"
+  }
+}

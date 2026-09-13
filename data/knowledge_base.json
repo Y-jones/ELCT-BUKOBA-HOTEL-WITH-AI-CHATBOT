@@ -810,7 +810,25 @@
   "policies": {
     "pricing": "Room and food prices published on the site are treated as reference figures. The live booking system indicates room rates are VAT-inclusive (VAT is shown broken out of the total, not added on top). No separate published cancellation, check-in/check-out time, or refund policy exists on the pages reviewed — do not invent one; tell the guest to confirm with the hotel directly.",
     "payment": "The Book a Room flow states: 'Pay at Hotel' (payment is made at the hotel, not online) and offers '24hr Confirmation'.",
-    "residency_pricing": "The hotel distinguishes 'Resident' (Tanzanian) and 'Foreigner' pricing; nationality determines which rate applies."
+    "residency_pricing": "The hotel distinguishes 'Resident' (Tanzanian) and 'Foreigner' pricing; nationality determines which rate applies.",
+    "check_in_out": {
+      "check_in_time": "Not published on the website — hotel confirmation required",
+      "check_out_time": "Not published on the website — hotel confirmation required",
+      "early_check_in_or_late_check_out": "Not published — availability-dependent, ask the hotel directly",
+      "cancellation_policy": "No cancellation/refund policy is published — confirm with the hotel before booking",
+      "status": "unconfirmed — do not state a specific time; offer to help the guest contact the hotel to confirm"
+    },
+    "security": {
+      "published_details": "Free private parking with maximum security in the compound (stated on the website).",
+      "cctv_room_safes_guards": "Not published on the website — hotel confirmation required. Do not confirm or deny specific security measures (CCTV, in-room safes, night guards) that aren't in this file.",
+      "status": "partially confirmed"
+    },
+    "children_pets_smoking": {
+      "children_extra_guests": "Not published on the website — hotel confirmation required",
+      "pets": "Not published on the website — hotel confirmation required",
+      "smoking_policy": "Not published on the website — hotel confirmation required",
+      "status": "unconfirmed"
+    }
   },
   "destination_knowledge": {
     "region": "Kagera Region, northwest Tanzania, on the western shore of Lake Victoria",
