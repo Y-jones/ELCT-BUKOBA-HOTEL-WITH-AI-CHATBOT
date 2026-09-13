@@ -27,7 +27,7 @@
       title: 'ELCT BUKOBA HOTEL AI ASSISTANT',
       status: 'Usually replies instantly',
       placeholder: 'How may we help you today?',
-      greeting: "Hello! I'm the ELCT Bukoba Hotel AI Assistant. I can help with rooms, dining, conference halls, tours, car hire, and getting here. What would you like to know?",
+      greeting: "Hello! I'm the ELCT Bukoba Hotel AI Assistant.Is there anything regarding our Hotel that i could help with? What would you like to know about our Hotel?",
       quick: ['Rooms', 'Restaurant', 'Conference Facilities', 'Book a Room', 'Hotel Location', 'Get Directions', 'Contact Hotel'],
       humanChip: 'Talk to a human',
       humanText: "Hi, I'd like to speak with someone at the hotel.",
@@ -40,7 +40,6 @@
       quick: ['Vyumba', 'Mkahawa', 'Kumbi za Mikutano', 'Weka Chumba', 'Mahali Lilipo Hoteli', 'Njia ya Kufika', 'Wasiliana Nasi'],
       humanChip: 'Ongea na mtu',
       humanText: 'Habari, ningependa kuzungumza na mtu hotelini.',
-      protoNote: '(Kumbuka: mfano huu — majibu yametolewa kutoka taarifa za hoteli zilizochapishwa; msaidizi kamili wa AI utaunganishwa mfumo wa nyuma ukishakamilika.)'
     },
     fr: {
       title: 'ELCT BUKOBA HOTEL AI ASSISTANT',
@@ -50,7 +49,6 @@
       quick: ['Chambres', 'Restaurant', 'Salles de conférence', 'Réserver une chambre', 'Emplacement', 'Itinéraire', 'Contact'],
       humanChip: 'Parler à quelqu\'un',
       humanText: "Bonjour, j'aimerais parler à quelqu'un de l'hôtel.",
-      protoNote: "(Remarque prototype : ces réponses proviennent des informations publiées par l'hôtel — l'assistant complet se connectera une fois le backend construit.)"
     },
     de: {
       title: 'ELCT BUKOBA HOTEL AI ASSISTANT',
@@ -60,7 +58,6 @@
       quick: ['Zimmer', 'Restaurant', 'Konferenzräume', 'Zimmer buchen', 'Standort', 'Wegbeschreibung', 'Kontakt'],
       humanChip: 'Mit Mensch sprechen',
       humanText: 'Hallo, ich möchte gerne mit jemandem vom Hotel sprechen.',
-      protoNote: '(Prototyp-Hinweis: Diese Antworten stammen aus den veröffentlichten Hoteldaten — der vollständige KI-Assistent wird angebunden, sobald das Backend fertig ist.)'
     }
   };
 
