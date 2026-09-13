@@ -26,7 +26,7 @@
     en: {
       title: 'ELCT BUKOBA HOTEL AI ASSISTANT',
       status: 'Usually replies instantly',
-      placeholder: 'Ask about rooms, dining, tours…',
+      placeholder: 'How may we help you today?',
       greeting: "Hello! I'm the ELCT Bukoba Hotel AI Assistant. I can help with rooms, dining, conference halls, tours, car hire, and getting here. What would you like to know?",
       quick: ['Rooms', 'Restaurant', 'Conference Facilities', 'Book a Room', 'Hotel Location', 'Get Directions', 'Contact Hotel'],
       humanChip: 'Talk to a human',
