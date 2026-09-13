@@ -58,4 +58,21 @@ function parseModelOutput(rawText) {
   return { text, lang, handoffSummary, suggestions, bookingData, serviceRequestData };
 }
 
-module.exports = { parseModelOutput };
+/**
+ * Safety net for when the model still runs out of its token budget
+ * mid-sentence (finish_reason "length"): trims back to the last complete
+ * sentence rather than showing the guest a reply that stops half way
+ * through a word or clause. Only called when the caller has confirmed the
+ * completion was actually truncated — never used to shorten a normal,
+ * complete reply.
+ */
+function trimToLastSentence(text) {
+  const trimmed = text.trim();
+  const matches = [...trimmed.matchAll(/[.!?](?:\s|$)/g)];
+  if (!matches.length) return trimmed;
+  const lastEnd = matches[matches.length - 1].index + 1;
+  const cut = trimmed.slice(0, lastEnd).trim();
+  return cut.length >= 20 ? cut : trimmed; // don't gut a short reply to nothing
+}
+
+module.exports = { parseModelOutput, trimToLastSentence };

@@ -3,7 +3,7 @@ const { retrieveContext, KB, DIRECTORY_TEXT } = require('../retrieval');
 const { buildSystemPrompt } = require('../systemPrompt');
 const { preCheck, postCheck, detectLang } = require('../guardrails');
 const { chatCompletion } = require('../groqClient');
-const { parseModelOutput } = require('../responseParser');
+const { parseModelOutput, trimToLastSentence } = require('../responseParser');
 const { createBooking, createServiceRequest } = require('../bookingService');
 const { bookingTicketText } = require('../whatsapp');
 const { query: dbQuery } = require('../db');
@@ -64,6 +64,14 @@ router.post('/chat', async (req, res) => {
     // see the cleaned reply.
     const parsed = parseModelOutput(completion.text);
     const lang = parsed.lang || detectLang(message);
+
+    // Belt-and-braces: if Groq cut the completion off mid-sentence
+    // (finish_reason "length"), never show that to the guest — trim back
+    // to the last full sentence instead of a dangling clause.
+    if (completion.finishReason === 'length') {
+      console.warn('[chat] completion truncated at max_tokens — trimming to last full sentence');
+      parsed.text = trimToLastSentence(parsed.text);
+    }
 
     // 3. Business-logic post-check — catch anything the model got wrong anyway
     const checked = postCheck(parsed.text, message);

@@ -22,7 +22,7 @@ function getClient() {
 const MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-20b';
 
 const MAX_TOKENS = parseInt(
-  process.env.GROQ_MAX_TOKENS || '300',
+  process.env.GROQ_MAX_TOKENS || '700',
   10
 );
 
@@ -193,6 +193,7 @@ async function callWithRetry(
       text,
       model: MODEL,
       usage: completion.usage || null,
+      finishReason: choice && choice.finish_reason,
     };
   } catch (err) {
     const status =
